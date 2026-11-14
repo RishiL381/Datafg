@@ -10,16 +10,21 @@ A zip code can be close to services but still badly served (an "access mirage").
 ```bash
 bash scripts/download_data.sh          # raw data -> data/ (gitignored, ~8.2 GB)
 python3.12 -m venv .venv && .venv/bin/pip install -r close_not_accessible/requirements.txt
-.venv/bin/python close_not_accessible/src/step1_feasibility.py | tee close_not_accessible/outputs/cache/step1_feasibility_log.txt
+.venv/bin/python close_not_accessible/src/step1_feasibility.py   # ~15 s
+.venv/bin/python close_not_accessible/src/step2_physical_access.py  # ~50 s
+TOKENIZERS_PARALLELISM=false .venv/bin/python close_not_accessible/src/step3a_topics.py  # ~6 min first run (embeddings)
+.venv/bin/python close_not_accessible/src/step3b_make_labels.py
 ```
 Each step script reads from `data/` and writes to `close_not_accessible/outputs/`. Run them in order.
 
 ## Steps
 | Step | Script | Status |
 |---|---|---|
-| 1. Feasibility (filter places, join reviews, count 1-2 star) | `src/step1_feasibility.py` | done, below 1,500 gate; waiting on review-source decision |
-| 2. Physical access (BallTree distances, zip medians) | `src/step2_physical_access.py` | not started |
-| 3. Felt access (themes, labels, classifiers) | `src/step3_*` | not started |
+| 1. Feasibility (filter places, join reviews, count 1-2 star) | `src/step1_feasibility.py` | done: 7,183 low-star reviews (both sources) |
+| 2. Physical access (BallTree distances, zip medians) | `src/step2_physical_access.py` | done: `outputs/step2_zip_physical_access.csv` |
+| 3a. Complaint themes (BERTopic per service type) | `src/step3a_topics.py` | done: `outputs/step3a_topics.csv` |
+| 3b. Label file (500 reviews, LLM pre-labels) | `src/step3b_make_labels.py` | done; **waiting on Riley's hand check** (`labels/label_template.csv`) |
+| 3c. Classifiers (keyword, TF-IDF+LR, DistilBERT) + error analysis | `src/step3c_train.py` | not started |
 | 4. Combine (empirical Bayes, quadrants, equity, map) | `src/step4_combine.py` | not started |
 
 ## Data decisions

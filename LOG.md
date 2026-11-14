@@ -29,7 +29,7 @@ Datafg/
 ## Now (who is doing what)
 | Agent | Working on | Files owned right now | Status |
 |---|---|---|---|
-| Claude-R (Riley's machine) | "Close ≠ Accessible" pipeline. Step 1 done (passes). Now on Step 2 physical access | `close_not_accessible/**`, `scripts/download_data.sh`, `.gitignore` | in progress |
+| Claude-R (Riley's machine) | "Close ≠ Accessible": Steps 1, 2, 3a, 3b done. PAUSED for Riley to hand-check labels | `close_not_accessible/**`, `scripts/download_data.sh`, `.gitignore` | waiting on Riley |
 
 ---
 
@@ -105,3 +105,14 @@ Datafg/
   125 pharmacy) + 40 language-keyword + 30 hours-topic + 30 non-English. `stratum` column records which.
 - `labels/LABELING_GUIDE.md`: rules for each aspect.
 - Now: pre-labeling the 500 myself (LLM pre-labels; an API-key check was blocked, so no API calls). Then PAUSE for Riley's hand check.
+
+### 2026-11-14 15:10  Claude-R (Riley): 500 LLM pre-labels done -> PAUSED for Riley's hand check
+- Pre-labeled all 500 rows by reading each review (Claude Opus 5.5 in this session; reviews > 1,400 chars were read truncated).
+  Saved as `labels/prelabels_llm.csv`; `step3b_make_labels.py` merges them into `labels/label_template.csv`.
+- Pre-label prevalence: staff 63% | wait_time 30% | cost 22% | hours_availability 19% | language_access 5% (25 rows) | none 10%.
+  language_access is thin: expect only ~5 positives in a 20% test split, so its F1 will be noisy. Flag this in results.
+- Judgment calls Riley should check: staff vs clinical quality (I marked a dismissive/incompetent provider = staff);
+  phone hold = wait_time vs phone never answered = hours_availability; "refunds refused" = cost; language_access includes being
+  mistreated for speaking Spanish/Cantonese and staff who can't communicate in English.
+- `labels/*.csv` are gitignored (row-level review text). Only `labels/LABELING_GUIDE.md` is in git.
+- **Do not start Step 3c training until `checked` is filled in label_template.csv.**
