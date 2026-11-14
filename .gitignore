@@ -15,3 +15,6 @@ close_not_accessible/outputs/cache/
 close_not_accessible/outputs/models/
 
 .DS_Store
+
+# Row-level review text for hand-labeling (not zip-level) -> local only by default
+close_not_accessible/labels/*.csv

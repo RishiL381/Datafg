@@ -49,7 +49,8 @@ KEYWORDS = {
         r"can'?t reach", r"\bweekends?\b", r"\bholiday", r"after hours",
     ],
 }
-_KW = {a: re.compile("|".join(p), re.IGNORECASE) for a, p in KEYWORDS.items()}
+_KW = {a: re.compile("|".join(re.sub(r"\((?!\?)", "(?:", x) for x in p), re.IGNORECASE)  # non-capturing
+       for a, p in KEYWORDS.items()}
 
 
 def keyword_labels(texts: pd.Series | list[str]) -> pd.DataFrame:

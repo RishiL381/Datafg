@@ -92,3 +92,16 @@ Datafg/
 - Prices split by status: `median_rent_zestimate` (all homes, main rent measure), `median_rent_listing` (FOR_RENT), `median_sale_price`.
 - Output: `outputs/step2_zip_physical_access.csv` (zip level). Home-level rows only in `outputs/cache/homes.parquet` (gitignored).
 - Next: Step 3 (BERTopic on the 7,183 one-to-two-star reviews, then build `label_template.csv`).
+
+### 2026-11-14 14:30  Claude-R (Riley): Step 3a themes + 3b label sample
+- `src/step3a_topics.py`: MiniLM sentence embeddings for all 25,352 reviews (cached `outputs/cache/emb_minilm.npy`, ~6 min CPU once),
+  then BERTopic on the 7,090 one-to-two-star reviews with >= 5 words.
+  - A single model just split by service type, so BERTopic is fit **per service type**: clinic 37 / pharmacy 20 / grocery 30 topics.
+  - `outputs/step3a_topics.csv` (top words per topic) + `outputs/step3a_topic_aspect_map.csv` (my mapping of each topic -> aspect or "other").
+  - All 5 aspects show up as clear topics (billing/insurance, lines/refill delays, rude staff, phones never answered, wrong hours,
+    Spanish-speaker treatment). **Gap:** 59% of clustered grocery complaints are food quality (expired, moldy, rotten), which no aspect covers.
+- `src/aspects.py`: the 5 aspect definitions + the keyword baseline matcher.
+- `src/step3b_make_labels.py` -> `labels/label_template.csv` (500 rows, gitignored: review text). 400 random (150 clinic / 125 grocery /
+  125 pharmacy) + 40 language-keyword + 30 hours-topic + 30 non-English. `stratum` column records which.
+- `labels/LABELING_GUIDE.md`: rules for each aspect.
+- Now: pre-labeling the 500 myself (LLM pre-labels; an API-key check was blocked, so no API calls). Then PAUSE for Riley's hand check.

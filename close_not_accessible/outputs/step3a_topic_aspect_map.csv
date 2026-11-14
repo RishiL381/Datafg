@@ -1,0 +1,88 @@
+service_type,topic,aspect,theme
+clinic,0,cost,billing for annual/physical visits
+clinic,1,hours_availability,lab closed or slow lab results
+clinic,2,wait_time,late appointments and lobby waits
+clinic,3,hours_availability,phone never answered / voicemail
+clinic,4,wait_time,cancelled or rescheduled appointments
+clinic,5,cost,profit-driven care and billing
+clinic,6,staff,dismissive provider communication
+clinic,7,other,clinical quality / misdiagnosis
+clinic,8,other,dental care quality
+clinic,9,wait_time,long waits to be seen
+clinic,10,cost,billing department and insurance
+clinic,11,staff,zero-star general dissatisfaction with provider
+clinic,12,other,parking / building / security
+clinic,13,staff,referrals and records handling
+clinic,14,other,Carbon Health urgent care (mixed)
+clinic,15,other,blood draw / lab technique
+clinic,16,other,pregnancy / OB care
+clinic,17,staff,rude front desk
+clinic,18,cost,surprise charges / scam
+clinic,19,other,pediatric care
+clinic,20,wait_time,prescription refills from clinic
+clinic,21,other,x-ray / injury diagnosis
+clinic,22,staff,provider dismissive of symptoms
+clinic,23,wait_time,referral and specialist delays
+clinic,24,other,ultrasound / fertility care
+clinic,25,language_access,Spanish-language reviews (check: not all are language complaints)
+clinic,26,cost,preventive visit billed / not covered
+clinic,27,other,emergency care quality
+clinic,28,staff,disorganized office staff
+clinic,29,cost,insurance network / coverage
+clinic,30,other,sleep study vendor
+clinic,31,wait_time,phone hold to make appointment
+clinic,32,wait_time,scheduling system / telehealth access
+clinic,33,other,vaccines / flu shots
+clinic,34,staff,rude receptionist
+clinic,35,wait_time,lack of timely access (Kaiser)
+clinic,36,hours_availability,urgent care not taking patients / hours
+pharmacy,0,wait_time,vaccine appointments and waits
+pharmacy,1,staff,customer service / phone (AI line)
+pharmacy,2,other,out of stock / general
+pharmacy,3,cost,prescription prices / generics
+pharmacy,4,hours_availability,phone hold / unreachable
+pharmacy,5,hours_availability,wrong hours / lunch closures
+pharmacy,6,cost,insurance prior authorization
+pharmacy,7,wait_time,slow drive-thru / understaffed
+pharmacy,8,wait_time,refill delays / back orders
+pharmacy,9,wait_time,long lines
+pharmacy,10,staff,rude / discriminatory staff
+pharmacy,11,staff,rude employees (store)
+pharmacy,12,other,general incompetence
+pharmacy,13,staff,rude pharmacist techs
+pharmacy,14,wait_time,prescription not ready
+pharmacy,15,staff,pharmacist attitude
+pharmacy,16,cost,insurance / refill coordination
+pharmacy,17,staff,window / phone interactions
+pharmacy,18,other,zero-star general
+pharmacy,19,wait_time,prescription not ready after notified
+grocery,0,other,expired products
+grocery,1,hours_availability,closed during posted hours
+grocery,2,other,returns / receipts / cash handling
+grocery,3,other,prepared food (burritos)
+grocery,4,other,rotten produce
+grocery,5,wait_time,checkout lines / self checkout
+grocery,6,staff,security guards treating customers badly
+grocery,7,other,spoiled meat
+grocery,8,staff,rude cashier / manager
+grocery,9,staff,customer service treatment
+grocery,10,cost,overcharged vs advertised price
+grocery,11,other,deli quality
+grocery,12,language_access,treated badly over Spanish / Hispanic customers
+grocery,13,other,homeless / safety / carts
+grocery,14,cost,bag fees / cheap bags
+grocery,15,cost,card fees
+grocery,16,cost,high prices
+grocery,17,other,moldy bread
+grocery,18,other,spoiled rice / refunds
+grocery,19,other,frozen / dairy quality
+grocery,20,other,meat counter hygiene
+grocery,21,other,Indian grocery selection/prices
+grocery,22,other,flies / cleanliness
+grocery,23,cost,deals and prices (99 Ranch)
+grocery,24,other,prepared chicken
+grocery,25,other,halal meat
+grocery,26,other,bakery orders
+grocery,27,other,owner conduct
+grocery,28,other,restroom access
+grocery,29,other,parking lot
