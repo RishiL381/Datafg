@@ -1,0 +1,126 @@
+aspect,direction,rank,term,weight
+wait_time,+,1,wait,2.262
+wait_time,+,2,waited,2.122
+wait_time,+,3,days,1.984
+wait_time,+,4,waiting,1.912
+wait_time,+,5,staff,1.64
+wait_time,+,6,appointment,1.529
+wait_time,+,7,on,1.487
+wait_time,+,8,time,1.399
+wait_time,+,9,no one,1.321
+wait_time,+,10,line,1.269
+wait_time,+,11,slow,1.239
+wait_time,+,12,over,1.182
+wait_time,+,13,one,1.158
+wait_time,+,14,are,1.155
+wait_time,+,15,up,1.137
+wait_time,-,1,he,-0.969
+wait_time,-,2,bad,-0.858
+wait_time,-,3,for the,-0.813
+wait_time,-,4,me to,-0.803
+wait_time,-,5,closed,-0.801
+wait_time,-,6,her,-0.792
+wait_time,-,7,pay,-0.744
+wait_time,-,8,from,-0.731
+wait_time,-,9,anything,-0.729
+wait_time,-,10,la,-0.715
+cost,+,1,insurance,2.531
+cost,+,2,price,2.192
+cost,+,3,the price,1.408
+cost,+,4,cash,1.375
+cost,+,5,won,1.35
+cost,+,6,with,1.341
+cost,+,7,charge,1.338
+cost,+,8,pay,1.32
+cost,+,9,prices,1.288
+cost,+,10,bill,1.273
+cost,+,11,expensive,1.193
+cost,+,12,tienes,1.158
+cost,+,13,we,1.152
+cost,+,14,charged,1.148
+cost,+,15,everything,1.143
+cost,-,1,time,-1.241
+cost,-,2,at,-0.894
+cost,-,3,long,-0.893
+cost,-,4,one,-0.87
+cost,-,5,all,-0.784
+cost,-,6,into,-0.768
+cost,-,7,person,-0.739
+cost,-,8,line,-0.731
+cost,-,9,they are,-0.726
+cost,-,10,wait,-0.712
+staff,+,1,not,1.84
+staff,+,2,she,1.619
+staff,+,3,rude,1.618
+staff,+,4,me,1.386
+staff,+,5,customer,1.353
+staff,+,6,we,1.321
+staff,+,7,terrible,1.297
+staff,+,8,called,1.249
+staff,+,9,front,1.196
+staff,+,10,her,1.19
+staff,+,11,go,1.164
+staff,+,12,my,1.135
+staff,+,13,customers,1.084
+staff,+,14,desk,1.042
+staff,+,15,attitude,1.022
+staff,-,1,pan,-1.065
+staff,-,2,de,-0.921
+staff,-,3,waiting,-0.914
+staff,-,4,expired,-0.883
+staff,-,5,food,-0.879
+staff,-,6,price,-0.874
+staff,-,7,times,-0.862
+staff,-,8,for the,-0.846
+staff,-,9,stop,-0.842
+staff,-,10,getting,-0.824
+language_access,+,1,spanish,2.852
+language_access,+,2,english,2.426
+language_access,+,3,speak,2.153
+language_access,+,4,spanish and,1.533
+language_access,+,5,in spanish,1.356
+language_access,+,6,understand,1.33
+language_access,+,7,the staff,1.042
+language_access,+,8,staff,0.949
+language_access,+,9,speak spanish,0.945
+language_access,+,10,random,0.921
+language_access,+,11,language,0.919
+language_access,+,12,right,0.9
+language_access,+,13,hour for,0.886
+language_access,+,14,don understand,0.886
+language_access,+,15,here when,0.876
+language_access,-,1,pharmacy,-0.536
+language_access,-,2,been,-0.529
+language_access,-,3,get,-0.505
+language_access,-,4,and they,-0.455
+language_access,-,5,your,-0.434
+language_access,-,6,other,-0.399
+language_access,-,7,out,-0.397
+language_access,-,8,had to,-0.395
+language_access,-,9,be,-0.378
+language_access,-,10,then,-0.372
+hours_availability,+,1,hours,2.13
+hours_availability,+,2,closed,1.708
+hours_availability,+,3,the phone,1.518
+hours_availability,+,4,up,1.475
+hours_availability,+,5,closes,1.471
+hours_availability,+,6,phone,1.369
+hours_availability,+,7,website,1.278
+hours_availability,+,8,open,1.117
+hours_availability,+,9,office,1.052
+hours_availability,+,10,walk ins,1.034
+hours_availability,+,11,ins,1.034
+hours_availability,+,12,hung,1.015
+hours_availability,+,13,hung up,1.015
+hours_availability,+,14,20,0.951
+hours_availability,+,15,on hold,0.946
+hours_availability,-,1,is,-0.946
+hours_availability,-,2,had,-0.942
+hours_availability,-,3,she,-0.904
+hours_availability,-,4,order,-0.9
+hours_availability,-,5,that,-0.89
+hours_availability,-,6,and,-0.829
+hours_availability,-,7,it was,-0.824
+hours_availability,-,8,appointment is,-0.817
+hours_availability,-,9,food,-0.796
+hours_availability,-,10,like,-0.782

@@ -1,0 +1,22 @@
+group,value,n,macro_f1,exact_match,mean_wrong_aspects
+service_type,clinic,39,0.58,0.359,0.923
+service_type,grocery,34,0.781,0.735,0.324
+service_type,pharmacy,27,0.612,0.481,0.63
+county,Alameda,20,0.714,0.5,0.7
+county,Contra Costa,14,0.775,0.429,0.786
+county,Marin,3,,0.667,0.333
+county,Napa,3,,0.333,0.667
+county,San Francisco,17,0.695,0.471,0.765
+county,San Mateo,9,0.743,0.556,0.444
+county,Santa Clara,18,0.541,0.333,0.889
+county,Solano,6,0.533,0.833,0.333
+county,Sonoma,4,,0.75,0.25
+county,outside 9 counties / unknown,6,0.8,1.0,0.0
+short,False,71,0.74,0.507,0.676
+short,True,29,0.628,0.552,0.552
+non_english,False,94,0.755,0.532,0.596
+non_english,True,6,0.133,0.333,1.333
+stratum,enriched_hours_topic,9,0.445,0.556,0.444
+stratum,enriched_language_kw,5,0.538,0.6,0.4
+stratum,enriched_non_english,5,0.0,0.4,1.4
+stratum,random,81,0.613,0.519,0.63

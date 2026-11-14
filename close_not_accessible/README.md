@@ -14,7 +14,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -r close_not_accessible/requir
 .venv/bin/python close_not_accessible/src/step2_physical_access.py  # ~50 s
 TOKENIZERS_PARALLELISM=false .venv/bin/python close_not_accessible/src/step3a_topics.py  # ~6 min first run (embeddings)
 .venv/bin/python close_not_accessible/src/step3b_make_labels.py
-TOKENIZERS_PARALLELISM=false .venv/bin/python close_not_accessible/src/step3c_train.py  # ~15 min; needs >= 300 checked labels
+.venv/bin/python close_not_accessible/src/step3c_train.py --accept-llm-labels  # ~20 s (drop the flag once labels are hand-checked)
 .venv/bin/python close_not_accessible/src/step4_combine.py  # ~15 s
 ```
 Each step script reads from `data/` and writes to `close_not_accessible/outputs/`. Run them in order.
@@ -25,9 +25,9 @@ Each step script reads from `data/` and writes to `close_not_accessible/outputs/
 | 1. Feasibility (filter places, join reviews, count 1-2 star) | `src/step1_feasibility.py` | done: 7,183 low-star reviews (both sources) |
 | 2. Physical access (BallTree distances, zip medians) | `src/step2_physical_access.py` | done: `outputs/step2_zip_physical_access.csv` |
 | 3a. Complaint themes (BERTopic per service type) | `src/step3a_topics.py` | done: `outputs/step3a_topics.csv` |
-| 3b. Label file (500 reviews, LLM pre-labels) | `src/step3b_make_labels.py` | done; **waiting on Riley's hand check** (`labels/label_template.csv`) |
-| 3c. Classifiers (keyword, TF-IDF+LR, MiniLM+LR, DistilBERT) + error analysis | `src/step3c_train.py` | written + smoke-tested; runs once labels are checked |
-| 4. Combine (empirical Bayes, quadrants, equity, map) | `src/step4_combine.py` | done (aspect columns preliminary until 3c real run): `outputs/zip_summary.csv`, `outputs/zip_map.html` |
+| 3b. Label file (500 reviews, LLM pre-labels) | `src/step3b_make_labels.py` | done; Riley accepted the LLM labels as-is (not hand-checked) |
+| 3c. Classifiers (keyword baseline, TF-IDF+LR, MiniLM+LR) + error analysis | `src/step3c_train.py` | done on LLM labels accepted without hand check: `outputs/step3c_*.csv` |
+| 4. Combine (empirical Bayes, quadrants, equity, map) | `src/step4_combine.py` | done: `outputs/zip_summary.csv`, `outputs/zip_map.html` |
 
 ## Data decisions
 Documented inline in each script and summarized in `../LOG.md`.

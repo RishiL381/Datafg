@@ -29,7 +29,7 @@ Datafg/
 ## Now (who is doing what)
 | Agent | Working on | Files owned right now | Status |
 |---|---|---|---|
-| Claude-R (Riley's machine) | "Close ≠ Accessible": Steps 1-4 run; aspect results PRELIMINARY until Riley checks labels | `close_not_accessible/**`, `scripts/download_data.sh`, `.gitignore` | waiting on Riley |
+| Claude-R (Riley's machine) | "Close ≠ Accessible": Steps 1-4 done (DistilBERT dropped; labels = accepted LLM labels) | `close_not_accessible/**`, `scripts/download_data.sh`, `.gitignore` | waiting on Riley |
 
 ---
 
@@ -145,3 +145,17 @@ Datafg/
 - Outputs: `outputs/zip_summary.csv` (Tableau), `step4_correlations.csv`, `step4_quadrant_equity.csv`, `zip_map.html`.
   lat/lon = zip centroid of homes, blanked for low_n zips (privacy).
 - Caveat for write-up: "close" zips are dense urban areas with chain stores; the pattern may be chain vs. independent, not distance itself.
+
+### 2026-11-14 16:40  Claude-R (Riley): DistilBERT dropped; Step 3c + 4 run on accepted LLM labels
+- **Decision (Riley):** accept the 500 LLM pre-labels as gold WITHOUT a hand check (label_template.csv `checked` is still blank).
+  New flag `step3c_train.py --accept-llm-labels`; every output carries `label_status = llm_labels_accepted_not_hand_checked`.
+- **Decision (Riley):** drop DistilBERT to keep the project beginner-track friendly. Removed its code from step3c and deleted the
+  256 MB `distilbert-base-uncased` download from ~/.cache/huggingface. Step 3c is now all scikit-learn and runs in ~20 s on CPU.
+  Added `outputs/step3c_top_words.csv` (words that push each aspect up/down in TF-IDF+LR) for explainable slides.
+- Step 3c TEST (n=100; random-only n=81), macro-F1 [95% CI]: keyword 0.74 [0.65, 0.80] / random-only 0.58 [0.51, 0.63];
+  TF-IDF+LR 0.70 / 0.51; MiniLM+LR 0.73 [0.64, 0.81] / 0.61 [0.56, 0.66]. MiniLM+LR chosen (best VAL 0.78).
+  The model only beats the keyword baseline on random rows, and CIs overlap. Worst subgroups: non-English (n=6, F1 0.13), clinics (0.58).
+- Step 4 re-run with these aspects; numbers unchanged from the earlier preliminary run (same labels, same chosen model).
+- Track note (from Drive "2026 Datathon Tracks & Guide"): Advanced Track needs a trained model (LR counts), a baseline, held-out
+  metrics, >= 3 subgroup comparison + failure examples, reproducible code (all met), AND "if you create labels... check a sample by hand"
+  (NOT met). Dropping DistilBERT does not affect eligibility; the unchecked labels do.

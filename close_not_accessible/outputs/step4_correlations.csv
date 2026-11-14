@@ -5,19 +5,19 @@ distance_score,felt_rating_k1,zip,robustness: nearest 1 place instead of 3,0.204
 med_dist_clinic_mi,felt_rating_clinic,zip,clinic: distance vs. rating,-0.0391,-0.1665,0.0928,0.5423,245,False,
 med_dist_pharmacy_mi,felt_rating_pharmacy,zip,pharmacy: distance vs. rating,0.2028,0.0781,0.3187,0.0014,245,False,
 med_dist_grocery_mi,felt_rating_grocery,zip,grocery: distance vs. rating,0.2223,0.0919,0.35,0.0005,245,False,
-distance_score,complaint_rate_wait_time,zip,farther vs. wait_time complaints,-0.1072,-0.2315,0.0221,0.0941,245,True,PRELIMINARY
-distance_score,complaint_rate_cost,zip,farther vs. cost complaints,-0.2875,-0.4073,-0.1655,0.0,245,True,PRELIMINARY
-distance_score,complaint_rate_staff,zip,farther vs. staff complaints,-0.218,-0.334,-0.0978,0.0006,245,True,PRELIMINARY
-distance_score,complaint_rate_language_access,zip,farther vs. language_access complaints,-0.119,-0.2453,0.0115,0.0628,245,True,PRELIMINARY
-distance_score,complaint_rate_hours_availability,zip,farther vs. hours_availability complaints,-0.2346,-0.3613,-0.1087,0.0002,245,True,PRELIMINARY
+distance_score,complaint_rate_wait_time,zip,farther vs. wait_time complaints,-0.1072,-0.2315,0.0221,0.0941,245,True,llm_labels_accepted_not_hand_checked
+distance_score,complaint_rate_cost,zip,farther vs. cost complaints,-0.2875,-0.4073,-0.1655,0.0,245,True,llm_labels_accepted_not_hand_checked
+distance_score,complaint_rate_staff,zip,farther vs. staff complaints,-0.218,-0.334,-0.0978,0.0006,245,True,llm_labels_accepted_not_hand_checked
+distance_score,complaint_rate_language_access,zip,farther vs. language_access complaints,-0.119,-0.2453,0.0115,0.0628,245,True,llm_labels_accepted_not_hand_checked
+distance_score,complaint_rate_hours_availability,zip,farther vs. hours_availability complaints,-0.2346,-0.3613,-0.1087,0.0002,245,True,llm_labels_accepted_not_hand_checked
 median_rent_zestimate,felt_rating,zip,rent vs. rating (equity),-0.0473,-0.1822,0.0823,0.461,245,False,
 median_rent_zestimate,distance_score,zip,rent vs. distance (equity),-0.0611,-0.1919,0.0744,0.3406,245,False,
 median_rent_zestimate,felt_low_share,zip,rent vs. 1-2 star share (equity),0.1094,-0.016,0.2332,0.0874,245,False,
-median_rent_zestimate,complaint_rate_wait_time,zip,rent vs. wait_time complaints (equity),0.1703,0.0407,0.2944,0.0075,245,True,PRELIMINARY
-median_rent_zestimate,complaint_rate_cost,zip,rent vs. cost complaints (equity),0.1831,0.045,0.305,0.004,245,True,PRELIMINARY
-median_rent_zestimate,complaint_rate_staff,zip,rent vs. staff complaints (equity),0.1132,-0.0106,0.2358,0.077,245,True,PRELIMINARY
-median_rent_zestimate,complaint_rate_language_access,zip,rent vs. language_access complaints (equity),0.2045,0.0774,0.328,0.0013,245,True,PRELIMINARY
-median_rent_zestimate,complaint_rate_hours_availability,zip,rent vs. hours_availability complaints (equity),0.0612,-0.0717,0.1859,0.3398,245,True,PRELIMINARY
+median_rent_zestimate,complaint_rate_wait_time,zip,rent vs. wait_time complaints (equity),0.1703,0.0407,0.2944,0.0075,245,True,llm_labels_accepted_not_hand_checked
+median_rent_zestimate,complaint_rate_cost,zip,rent vs. cost complaints (equity),0.1831,0.045,0.305,0.004,245,True,llm_labels_accepted_not_hand_checked
+median_rent_zestimate,complaint_rate_staff,zip,rent vs. staff complaints (equity),0.1132,-0.0106,0.2358,0.077,245,True,llm_labels_accepted_not_hand_checked
+median_rent_zestimate,complaint_rate_language_access,zip,rent vs. language_access complaints (equity),0.2045,0.0774,0.328,0.0013,245,True,llm_labels_accepted_not_hand_checked
+median_rent_zestimate,complaint_rate_hours_availability,zip,rent vs. hours_availability complaints (equity),0.0612,-0.0717,0.1859,0.3398,245,True,llm_labels_accepted_not_hand_checked
 distance_score (within-county rank),felt_rating (within-county rank),zip,robustness: within-county,0.1473,0.0232,0.274,0.0211,245,False,
 distance_score,felt_rating,"zip, Alameda only",by county: Alameda,-0.2073,-0.4861,0.0867,0.1669,46,False,
 distance_score,felt_rating,"zip, Contra Costa only",by county: Contra Costa,-0.0165,-0.3236,0.3321,0.924,36,False,

@@ -1,0 +1,39 @@
+{
+  "chosen_model": "emb_lr",
+  "chosen_by": "VAL macro-F1",
+  "val_macro_f1": {
+    "keyword": 0.7205190039566545,
+    "tfidf_lr": 0.7140609098503836,
+    "emb_lr": 0.781050505050505
+  },
+  "configs": {
+    "keyword": null,
+    "tfidf_lr": "word+char, C=10",
+    "emb_lr": "MiniLM, C=10"
+  },
+  "thresholds": {
+    "keyword": null,
+    "tfidf_lr": [
+      0.5,
+      0.3,
+      0.5,
+      0.1,
+      0.4
+    ],
+    "emb_lr": [
+      0.55,
+      0.5,
+      0.35,
+      0.25,
+      0.35
+    ]
+  },
+  "split_sizes": {
+    "train": 301,
+    "test": 100,
+    "val": 99
+  },
+  "seed": 42,
+  "smoke": false,
+  "label_status": "llm_labels_accepted_not_hand_checked"
+}

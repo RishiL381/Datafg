@@ -1,0 +1,17 @@
+model,config,val_macro_f1
+keyword,fixed regexes,0.721
+tfidf_lr,"word, C=0.3",0.611
+tfidf_lr,"word, C=1",0.616
+tfidf_lr,"word, C=3",0.639
+tfidf_lr,"word, C=10",0.661
+tfidf_lr,"word, C=30",0.664
+tfidf_lr,"word+char, C=0.3",0.659
+tfidf_lr,"word+char, C=1",0.693
+tfidf_lr,"word+char, C=3",0.698
+tfidf_lr,"word+char, C=10",0.714
+tfidf_lr,"word+char, C=30",0.7
+emb_lr,"MiniLM, C=0.1",0.665
+emb_lr,"MiniLM, C=0.3",0.739
+emb_lr,"MiniLM, C=1",0.761
+emb_lr,"MiniLM, C=3",0.78
+emb_lr,"MiniLM, C=10",0.781

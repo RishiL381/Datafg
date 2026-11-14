@@ -1,23 +1,27 @@
 """STEP 3c: 5-ASPECT MULTI-LABEL CLASSIFIERS + ERROR ANALYSIS
 
-Models (all scored on the same held-out TEST split, tuned ONLY on VAL):
+Models (all scored on the same held-out TEST split, tuned ONLY on VAL). Everything is scikit-learn
+logistic regression, so it runs on a laptop CPU in under a minute and is easy to explain:
   1. keyword      baseline (aspects.KEYWORDS), no training
-  2. tfidf_lr     TF-IDF (word 1-2 grams + char 2-5 grams) + one-vs-rest logistic regression
-  3. emb_lr       MiniLM sentence embeddings (cached in Step 3a) + one-vs-rest logistic regression
-  4. distilbert   fine-tuned distilbert-base-uncased (Apple MPS GPU if available, else CPU)
-Tuning on VAL: regularization C, TF-IDF feature set, DistilBERT epoch (early stopping), and one decision
-threshold per aspect. TEST is touched once, at the end.
+  2. tfidf_lr     TF-IDF (word 1-2 grams + char 2-5 grams) + one logistic regression per aspect
+  3. emb_lr       MiniLM sentence embeddings (already computed in Step 3a) + one logistic regression per aspect
+(DistilBERT fine-tuning was dropped on 2026-11-14 to keep the project beginner-track friendly.)
+Tuning on VAL: regularization C, TF-IDF feature set, and one decision threshold per aspect.
+TEST is touched once, at the end.
 
 Run from repo root (after Riley has filled `checked` in labels/label_template.csv):
-    TOKENIZERS_PARALLELISM=false .venv/bin/python close_not_accessible/src/step3c_train.py
+    .venv/bin/python close_not_accessible/src/step3c_train.py
+Use the LLM pre-labels as gold without a hand check (flagged in every output):
+    .venv/bin/python close_not_accessible/src/step3c_train.py --accept-llm-labels
 Code check on the UNVERIFIED LLM pre-labels (writes only to outputs/cache/smoke/, never real results):
-    TOKENIZERS_PARALLELISM=false .venv/bin/python close_not_accessible/src/step3c_train.py --smoke
+    .venv/bin/python close_not_accessible/src/step3c_train.py --smoke
 
 Writes (real run):
   outputs/step3c_metrics.csv            per model x eval set x aspect: precision, recall, F1, support (+ macro rows)
   outputs/step3c_model_selection.csv    VAL scores for every config tried
   outputs/step3c_error_analysis.csv     best model's TEST errors by service type, county, short, non-English
   outputs/step3c_best_model.json        chosen model, thresholds, split sizes
+  outputs/step3c_top_words.csv          words that push each aspect up or down in tfidf_lr (explainability)
   labels/step3c_failures.csv            10 example failures with text (row-level -> gitignored)
   outputs/cache/review_aspects.parquet  aspects for ALL 1-2 star reviews (input to Step 4)
 """
@@ -42,8 +46,8 @@ from aspects import ASPECTS, keyword_matrix  # noqa: E402
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--smoke", action="store_true", help="code check on unverified pre-labels; outputs go to cache/smoke")
-ap.add_argument("--skip-bert", action="store_true", help="skip DistilBERT (fast iteration)")
-ap.add_argument("--bert-epochs", type=int, default=8)
+ap.add_argument("--accept-llm-labels", action="store_true",
+                help="use the LLM pre-labels as gold without a hand check (Riley's call); flagged in every output")
 args = ap.parse_args()
 
 C.set_seeds()
@@ -64,7 +68,15 @@ for a in ASPECTS:
     lab[a] = pd.to_numeric(lab[a], errors="coerce")
 if args.smoke:
     lab = lab.dropna(subset=ASPECTS)
+    LABEL_STATUS = "smoke_unverified"
+elif args.accept_llm_labels:
+    # DATA DECISION (Riley, 2026-11-14): accept the 500 LLM pre-labels as gold without a hand check.
+    # Test scores therefore measure agreement with the LLM labeler, not human-verified truth.
+    lab = lab.dropna(subset=ASPECTS)
+    LABEL_STATUS = "llm_labels_accepted_not_hand_checked"
+    print("NOTE: gold = LLM pre-labels accepted by Riley without hand check.")
 else:
+    LABEL_STATUS = "human_checked"
     # DATA DECISION: only rows Riley marked checked=1 count as gold labels.
     lab = lab[lab["checked"].fillna("").str.strip().isin(["1", "1.0", "yes", "y", "x"])].dropna(subset=ASPECTS)
     if len(lab) < MIN_CHECKED:
@@ -191,6 +203,22 @@ final["tfidf_lr"] = {"pred_test": predict_ovr(ms, X[te]) >= th, "pred_val": pred
                          else wv.transform(T)) >= th)}
 print(f"tfidf_lr best on VAL: {feats}, C={Cval}, macro-F1 {s:.3f}")
 
+# Explainability (beginner-friendly): the word features with the largest positive / negative weight per aspect.
+vocab = np.array(wv.get_feature_names_out())
+tw = []
+for j, a in enumerate(ASPECTS):
+    if ms[j] is None:
+        continue
+    coef = ms[j].coef_[0][:len(vocab)]                    # first block = word features
+    for sign, order in (("+", np.argsort(-coef)[:15]), ("-", np.argsort(coef)[:10])):
+        tw += [{"aspect": a, "direction": sign, "rank": k + 1, "term": vocab[i], "weight": round(float(coef[i]), 3)}
+               for k, i in enumerate(order)]
+top_words = pd.DataFrame(tw)
+top_words.to_csv(OUT / "step3c_top_words.csv", index=False)
+print("top words per aspect:")
+for a in ASPECTS:
+    print(f"  {a:18s} " + ", ".join(top_words[(top_words.aspect == a) & (top_words.direction == "+")].term.head(8)))
+
 # =============================================================== 4c. sentence embeddings + LR
 emb_all = np.load(C.CACHE_DIR / "emb_minilm.npy")
 rid_idx = pd.Series(np.arange(len(rev)), index=rev["rid"])
@@ -210,66 +238,6 @@ final["emb_lr"] = {"pred_test": predict_ovr(ms, E[te]) >= th, "pred_val": predic
                    "predict_rids": (lambda R, ms=ms, th=th: predict_ovr(ms, emb_all[rid_idx.loc[R].to_numpy()]) >= th)}
 print(f"emb_lr best on VAL: C={Cval}, macro-F1 {s:.3f}")
 
-# =============================================================== 4d. DistilBERT fine-tune
-if not args.skip_bert:
-    import torch
-    from torch.utils.data import DataLoader, TensorDataset
-    from transformers import AutoModelForSequenceClassification, AutoTokenizer, get_linear_schedule_with_warmup
-
-    BERT = "distilbert-base-uncased"
-    device = "mps" if torch.backends.mps.is_available() else "cpu"
-    torch.manual_seed(C.SEED)
-    tok = AutoTokenizer.from_pretrained(BERT)
-
-    def encode(T):
-        e = tok(list(T), truncation=True, max_length=256, padding="max_length", return_tensors="pt")
-        return e["input_ids"], e["attention_mask"]
-
-    def bert_probs(model, T, bs=32):
-        model.eval(); out = []
-        ids, am = encode(T)
-        with torch.no_grad():
-            for i in range(0, len(T), bs):
-                lo = model(input_ids=ids[i:i + bs].to(device), attention_mask=am[i:i + bs].to(device)).logits
-                out.append(torch.sigmoid(lo).float().cpu().numpy())
-        return np.vstack(out)
-
-    model = AutoModelForSequenceClassification.from_pretrained(
-        BERT, num_labels=len(ASPECTS), problem_type="multi_label_classification").to(device)
-    ids, am = encode(np.array(texts)[tr])
-    g = torch.Generator().manual_seed(C.SEED)
-    dl = DataLoader(TensorDataset(ids, am, torch.tensor(Y[tr], dtype=torch.float32)), batch_size=16,
-                    shuffle=True, generator=g)
-    # pos_weight up-weights rare aspects (capped so language_access doesn't explode).
-    pos = Y[tr].sum(0).clip(min=1)
-    loss_fn = torch.nn.BCEWithLogitsLoss(pos_weight=torch.tensor(((len(Y[tr]) - pos) / pos).clip(1, 10),
-                                                                  dtype=torch.float32, device=device))
-    opt = torch.optim.AdamW(model.parameters(), lr=5e-5, weight_decay=0.01)
-    epochs = 1 if args.smoke else args.bert_epochs
-    sched = get_linear_schedule_with_warmup(opt, int(0.1 * epochs * len(dl)), epochs * len(dl))
-    best = (-1, None, None, 0)
-    t0 = time.time()
-    for ep in range(1, epochs + 1):
-        model.train()
-        for b_ids, b_am, b_y in dl:
-            opt.zero_grad()
-            loss = loss_fn(model(input_ids=b_ids.to(device), attention_mask=b_am.to(device)).logits, b_y.to(device))
-            loss.backward(); opt.step(); sched.step()
-        Pv = bert_probs(model, np.array(texts)[va])
-        th = tune_thresholds(Pv, Y[va])
-        s = macro_f1(Y[va], Pv >= th)
-        selection.append({"model": "distilbert", "config": f"epoch {ep}", "val_macro_f1": s})
-        print(f"  distilbert epoch {ep}: VAL macro-F1 {s:.3f} ({time.time() - t0:.0f}s)")
-        if s > best[0]:  # early stopping on VAL: keep the best epoch's weights
-            best = (s, {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}, th, ep)
-    s, state, th, ep = best
-    model.load_state_dict(state)
-    final["distilbert"] = {"pred_test": bert_probs(model, np.array(texts)[te]) >= th,
-                           "pred_val": bert_probs(model, np.array(texts)[va]) >= th,
-                           "thresholds": th, "config": f"best epoch {ep} of {epochs}",
-                           "predict_texts": (lambda T, model=model, th=th: bert_probs(model, T) >= th)}
-    print(f"distilbert best on VAL: epoch {ep}, macro-F1 {s:.3f} (device {device})")
-
 # =============================================================== 5. TEST evaluation (once)
 rand_te = lab.loc[te, "stratum"].eq("random").to_numpy()
 rows = []
@@ -287,6 +255,7 @@ for name, d in final.items():
                      "recall": r.mean(), "f1": macro_f1(yt, yp), "support": int(len(yt)),
                      "f1_ci_low": np.percentile(boots, 2.5), "f1_ci_high": np.percentile(boots, 97.5)})
 metrics = pd.DataFrame(rows).round(3)
+metrics["label_status"] = LABEL_STATUS
 metrics.to_csv(OUT / "step3c_metrics.csv", index=False)
 pd.DataFrame(selection).round(3).to_csv(OUT / "step3c_model_selection.csv", index=False)
 
@@ -345,7 +314,7 @@ out_asp = pd.concat([low[["rid", "place_id", "service_type"]], asp], axis=1)
 gold = lab.set_index("rid")[ASPECTS]
 hit = out_asp["rid"].isin(gold.index)
 out_asp.loc[hit, ASPECTS] = gold.loc[out_asp.loc[hit, "rid"], ASPECTS].to_numpy()
-out_asp["label_source"] = np.where(hit, "gold", best_name)
+out_asp["label_source"] = np.where(hit, "gold" if LABEL_STATUS == "human_checked" else "llm_label", best_name)
 out_asp.to_parquet((C.CACHE_DIR / "smoke" if args.smoke else C.CACHE_DIR) / "review_aspects.parquet", index=False)
 print(f"scored {len(out_asp):,} low-star reviews; aspect rates: " +
       ", ".join(f"{a}={out_asp[a].mean():.2f}" for a in ASPECTS))
@@ -354,6 +323,7 @@ json.dump({"chosen_model": best_name, "chosen_by": "VAL macro-F1", "val_macro_f1
            "configs": {m: d.get("config") for m, d in final.items()},
            "thresholds": {m: (list(map(float, d["thresholds"])) if d["thresholds"] is not None else None)
                           for m, d in final.items()},
-           "split_sizes": lab["split"].value_counts().to_dict(), "seed": C.SEED, "smoke": args.smoke},
+           "split_sizes": lab["split"].value_counts().to_dict(), "seed": C.SEED, "smoke": args.smoke,
+           "label_status": LABEL_STATUS},
           open(OUT / "step3c_best_model.json", "w"), indent=2)
 print(f"wrote metrics/selection/error analysis/best_model to {OUT}")

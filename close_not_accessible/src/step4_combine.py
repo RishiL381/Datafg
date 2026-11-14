@@ -124,10 +124,13 @@ z["distance_score"] = z[[f"pct_dist_{s}" for s in C.SERVICE_TYPES]].mean(1)
 
 # ---- complaint aspects (B)
 asp_path = C.CACHE_DIR / "review_aspects.parquet"
-verified = asp_path.exists()
-if not verified:
-    asp_path = C.CACHE_DIR / "smoke" / "review_aspects.parquet"
-print(f"\naspect labels: {'VERIFIED (Step 3c real run)' if verified else 'PRELIMINARY (smoke run on unverified pre-labels)'}")
+best_json = C.OUT_DIR / "step3c_best_model.json"
+if asp_path.exists() and best_json.exists():
+    LABEL_STATUS = json.load(open(best_json)).get("label_status", "human_checked")
+else:
+    asp_path, LABEL_STATUS = C.CACHE_DIR / "smoke" / "review_aspects.parquet", "PRELIMINARY_smoke_unverified"
+verified = LABEL_STATUS == "human_checked"
+print(f"\naspect labels: {LABEL_STATUS}")
 asp = pd.read_parquet(asp_path)
 asp_place = asp.groupby("place_id")[ASPECTS].sum()
 asp_place["n_low_sampled"] = asp.groupby("place_id").size()
@@ -145,7 +148,7 @@ z = z.merge(zagg[[f"p_{a}_given_low" for a in ASPECTS] + ["n_low_sampled"]], lef
 for a in ASPECTS:
     # share of ALL reviews that complain about aspect a = P(low star) x P(a | low star)
     z[f"complaint_rate_{a}"] = z["felt_low_share"] * z[f"p_{a}_given_low"]
-z["aspect_labels"] = "verified" if verified else "PRELIMINARY_unverified"
+z["aspect_labels"] = LABEL_STATUS
 
 # ---- quadrants (non-low_n zips only)
 med_d, med_r = z.loc[main, "distance_score"].median(), z.loc[main, "felt_rating"].median()
@@ -189,7 +192,7 @@ for x, y, level, desc in pairs:
     rows.append({"x": x, "y": y, "level": level, "meaning": desc, "spearman_rho": rho, "ci_low": lo,
                  "ci_high": hi, "p_value": p, "n": n,
                  "uses_aspect_labels": "complaint_rate" in y,
-                 "aspect_labels": ("verified" if verified else "PRELIMINARY") if "complaint_rate" in y else ""})
+                 "aspect_labels": LABEL_STATUS if "complaint_rate" in y else ""})
 # robustness: within-county (rank both variables inside each county, so county-wide differences drop out)
 wc = M.assign(d=M.groupby("county")["distance_score"].rank(pct=True), r=M.groupby("county")["felt_rating"].rank(pct=True))
 rho, lo, hi, p, n = spearman_ci(wc["d"], wc["r"])
