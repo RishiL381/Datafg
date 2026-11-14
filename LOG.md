@@ -29,7 +29,7 @@ Datafg/
 ## Now (who is doing what)
 | Agent | Working on | Files owned right now | Status |
 |---|---|---|---|
-| Claude-R (Riley's machine) | "Close ≠ Accessible": Steps 1, 2, 3a, 3b done. PAUSED for Riley to hand-check labels | `close_not_accessible/**`, `scripts/download_data.sh`, `.gitignore` | waiting on Riley |
+| Claude-R (Riley's machine) | "Close ≠ Accessible": Steps 1-4 run; aspect results PRELIMINARY until Riley checks labels | `close_not_accessible/**`, `scripts/download_data.sh`, `.gitignore` | waiting on Riley |
 
 ---
 
@@ -129,3 +129,19 @@ Datafg/
 - Guard: a real run exits unless >= 300 rows have `checked=1`. `--smoke` runs on the unverified pre-labels and writes only to
   `outputs/cache/smoke/` (gitignored). Smoke run completes end to end in ~2 min (DistilBERT 1 epoch). Smoke numbers are NOT results.
 - Still waiting on Riley's label check. Step 4 not started.
+
+### 2026-11-14 16:10  Claude-R (Riley): Step 4 combine done -> first results
+- `close_not_accessible/src/step4_combine.py` (~15 s). Felt access per place from FULL Google star counts (`review_distribution`,
+  matches reviews_count): empirical-Bayes shrunk mean rating (normal-normal) and 1-2 star share (beta-binomial) per service type.
+  Zip felt access = avg over homes of their 3 nearest clinics/pharmacies/groceries. Distance score = mean percentile of the 3 median distances.
+- Aspect complaint rates = P(low star) x P(aspect | low star, EB-shrunk per zip). **PRELIMINARY**: uses the smoke-run model trained on
+  unverified LLM labels. Re-run step3c (real) then step4 after Riley's check; `aspect_labels` column says which.
+- **Main result (label-free, 245 zips with >= 30 homes):** farther zips have BETTER-rated nearby services. Spearman rho = +0.25
+  [95% CI 0.13, 0.37], p < 0.001; 1-2 star share rho = -0.25. Driven by grocery (+0.22) and pharmacy (+0.20); clinics ~0 (-0.04).
+  Robust: nearest-1 instead of 3 -> +0.20; within-county ranks -> +0.15 (p = 0.02); dropping SF -> +0.28. Alameda goes the other way (-0.21).
+  Home level (20k sample): rho 0.01-0.05 -> it's a neighborhood-level pattern, not "the closer store is always worse".
+- Quadrants: close+bad "access mirage" = 70 zips, 58,606 homes (40% of homes). SF 50% of zips, Santa Clara 42%, San Mateo 36%.
+- Equity (rent only, no ACS income in data/): no rent difference across quadrants (Kruskal-Wallis p = 0.78); rent vs rating rho = -0.05 (n.s.).
+- Outputs: `outputs/zip_summary.csv` (Tableau), `step4_correlations.csv`, `step4_quadrant_equity.csv`, `zip_map.html`.
+  lat/lon = zip centroid of homes, blanked for low_n zips (privacy).
+- Caveat for write-up: "close" zips are dense urban areas with chain stores; the pattern may be chain vs. independent, not distance itself.

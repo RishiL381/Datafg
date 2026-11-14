@@ -15,6 +15,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -r close_not_accessible/requir
 TOKENIZERS_PARALLELISM=false .venv/bin/python close_not_accessible/src/step3a_topics.py  # ~6 min first run (embeddings)
 .venv/bin/python close_not_accessible/src/step3b_make_labels.py
 TOKENIZERS_PARALLELISM=false .venv/bin/python close_not_accessible/src/step3c_train.py  # ~15 min; needs >= 300 checked labels
+.venv/bin/python close_not_accessible/src/step4_combine.py  # ~15 s
 ```
 Each step script reads from `data/` and writes to `close_not_accessible/outputs/`. Run them in order.
 
@@ -26,7 +27,7 @@ Each step script reads from `data/` and writes to `close_not_accessible/outputs/
 | 3a. Complaint themes (BERTopic per service type) | `src/step3a_topics.py` | done: `outputs/step3a_topics.csv` |
 | 3b. Label file (500 reviews, LLM pre-labels) | `src/step3b_make_labels.py` | done; **waiting on Riley's hand check** (`labels/label_template.csv`) |
 | 3c. Classifiers (keyword, TF-IDF+LR, MiniLM+LR, DistilBERT) + error analysis | `src/step3c_train.py` | written + smoke-tested; runs once labels are checked |
-| 4. Combine (empirical Bayes, quadrants, equity, map) | `src/step4_combine.py` | not started |
+| 4. Combine (empirical Bayes, quadrants, equity, map) | `src/step4_combine.py` | done (aspect columns preliminary until 3c real run): `outputs/zip_summary.csv`, `outputs/zip_map.html` |
 
 ## Data decisions
 Documented inline in each script and summarized in `../LOG.md`.
