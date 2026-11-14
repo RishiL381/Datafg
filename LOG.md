@@ -81,3 +81,14 @@ Datafg/
 - Place zip parsed from `address` for 98.9% of target places; only the zip is kept.
 - Cache now: `outputs/cache/places_target.parquet` (8,940 rows), `outputs/cache/reviews_all.parquet` (25,352 rows, stable id `rid`).
 - Next: Step 2 (Zillow homes -> BallTree haversine distance to nearest clinic/pharmacy/grocery + counts within 1 mile -> zip medians).
+
+### 2026-11-14 14:05  Claude-R (Riley): Step 2 physical access done
+- `close_not_accessible/src/step2_physical_access.py` (~50 s). Streams Zillow with usecols (+ `county`, added for the Bay filter and as "region").
+- Zillow facts: full parts = 148,005 rows, all 9 Bay counties; statuses only FOR_RENT 50% / RECENTLY_SOLD 42% / FOR_SALE 8%
+  (the 41 MB `zillow_sample.csv` is statewide with OTHER/SOLD statuses: don't use it for Bay Area work).
+- Dropped 799 homes (bad coords or zip not 94xxx/95xxx). Kept 147,206 homes in 291 zips (46 flagged `low_n` < 30 homes).
+- BallTree haversine: median home is 0.32 mi to a clinic, 0.48 mi to a pharmacy, 0.31 mi to a grocery; 10% / 17% / 9% of homes are > 1 mi.
+  Farthest zips: Bodega Bay, Sea Ranch, Geyserville, Discovery Bay, Bethel Island.
+- Prices split by status: `median_rent_zestimate` (all homes, main rent measure), `median_rent_listing` (FOR_RENT), `median_sale_price`.
+- Output: `outputs/step2_zip_physical_access.csv` (zip level). Home-level rows only in `outputs/cache/homes.parquet` (gitignored).
+- Next: Step 3 (BERTopic on the 7,183 one-to-two-star reviews, then build `label_template.csv`).
