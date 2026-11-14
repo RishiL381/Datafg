@@ -24,7 +24,7 @@ Each step script reads from `data/` and writes to `close_not_accessible/outputs/
 | 2. Physical access (BallTree distances, zip medians) | `src/step2_physical_access.py` | done: `outputs/step2_zip_physical_access.csv` |
 | 3a. Complaint themes (BERTopic per service type) | `src/step3a_topics.py` | done: `outputs/step3a_topics.csv` |
 | 3b. Label file (500 reviews, LLM pre-labels) | `src/step3b_make_labels.py` | done; **waiting on Riley's hand check** (`labels/label_template.csv`) |
-| 3c. Classifiers (keyword, TF-IDF+LR, DistilBERT) + error analysis | `src/step3c_train.py` | not started |
+| 3c. Classifiers (keyword, TF-IDF+LR, MiniLM+LR, DistilBERT) + error analysis | `src/step3c_train.py` | written + smoke-tested; runs once labels are checked |
 | 4. Combine (empirical Bayes, quadrants, equity, map) | `src/step4_combine.py` | not started |
 
 ## Data decisions
