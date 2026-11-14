@@ -14,6 +14,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -r close_not_accessible/requir
 .venv/bin/python close_not_accessible/src/step2_physical_access.py  # ~50 s
 TOKENIZERS_PARALLELISM=false .venv/bin/python close_not_accessible/src/step3a_topics.py  # ~6 min first run (embeddings)
 .venv/bin/python close_not_accessible/src/step3b_make_labels.py
+TOKENIZERS_PARALLELISM=false .venv/bin/python close_not_accessible/src/step3c_train.py  # ~15 min; needs >= 300 checked labels
 ```
 Each step script reads from `data/` and writes to `close_not_accessible/outputs/`. Run them in order.
 

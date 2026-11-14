@@ -116,3 +116,16 @@ Datafg/
   mistreated for speaking Spanish/Cantonese and staff who can't communicate in English.
 - `labels/*.csv` are gitignored (row-level review text). Only `labels/LABELING_GUIDE.md` is in git.
 - **Do not start Step 3c training until `checked` is filled in label_template.csv.**
+
+### 2026-11-14 15:40  Claude-R (Riley): Step 3c script written + smoke-tested (no real results yet)
+- `close_not_accessible/src/step3c_train.py`. Models: keyword baseline, TF-IDF (word / word+char) + LR, MiniLM embeddings + LR,
+  fine-tuned `distilbert-base-uncased` on Apple MPS. All tuning (C, features, DistilBERT epoch, per-aspect thresholds) on VAL only.
+- Split: 60/20/20 iterative multi-label stratification on the 5 aspects + service type (seed 42).
+- Reports TEST macro-F1 with 1,000-sample bootstrap CI, per-aspect P/R/F1, on all test rows AND random-stratum-only rows.
+- Error analysis by service type, county (place zip -> county via Step 2 table), short (bottom quartile, <= 41 words), non-English, stratum.
+  10 example failures go to `labels/step3c_failures.csv` (gitignored, has text).
+- Scores all 7,183 low-star reviews with the VAL-best model (gold labels override for the 500 checked rows)
+  -> `outputs/cache/review_aspects.parquet` for Step 4.
+- Guard: a real run exits unless >= 300 rows have `checked=1`. `--smoke` runs on the unverified pre-labels and writes only to
+  `outputs/cache/smoke/` (gitignored). Smoke run completes end to end in ~2 min (DistilBERT 1 epoch). Smoke numbers are NOT results.
+- Still waiting on Riley's label check. Step 4 not started.
