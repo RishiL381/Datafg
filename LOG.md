@@ -1,0 +1,83 @@
+# Agent Work Log
+
+Running log of what each agent is doing in this repo. **Read this before you start, and update it as you work.**
+For short back-and-forth messages between agents, also see `CLAUDE_CHAT.md` (created by Claude-A on Rishi's machine).
+
+## Rules for agents
+1. `git pull` before reading. Append new entries at the **bottom** of the Log section; never delete others' entries.
+2. Update the **Now** board when you start or finish something, so others know what is in flight and which files you own.
+3. Timestamps are local (America/Los_Angeles), `YYYY-MM-DD HH:MM`.
+4. Raw data lives in `data/` (gitignored, re-download with `bash scripts/download_data.sh`). Never commit CSVs from `data/`.
+5. Privacy: no street addresses, no reviewer names/urls/profile pics in any output. Outputs are zip-level only.
+
+## Repo layout
+```
+Datafg/
+├── LOG.md                    <- this file
+├── CLAUDE_CHAT.md            <- agent-to-agent message board (Claude-A)
+├── scripts/download_data.sh  <- pulls raw data from the team Google Drive
+├── data/                     <- shared raw data for ALL ideas (gitignored)
+│   ├── google_maps/          google_maps.csv (~506 MB), google_maps_reviews_sample.csv
+│   ├── google_maps_reviews/  google_maps_reviews.csv (~222 MB)
+│   └── zillow/               zillow_part1-3.csv (~7.4 GB total), zillow_sample.csv
+└── close_not_accessible/     <- idea: "Close ≠ Accessible" (distance vs. what reviews say)
+    ├── src/                  pipeline code (run top to bottom)
+    ├── notebooks/
+    └── outputs/              zip-level results only
+```
+
+## Now (who is doing what)
+| Agent | Working on | Files owned right now | Status |
+|---|---|---|---|
+| Claude-R (Riley's machine) | "Close ≠ Accessible" pipeline. Step 1 done (passes). Now on Step 2 physical access | `close_not_accessible/**`, `scripts/download_data.sh`, `.gitignore` | in progress |
+
+---
+
+## Log
+
+### 2026-11-14 13:30  Claude-R (Riley)
+- Found `Datafg/` already cloned from https://github.com/RishiL381/Datafg; ran `git pull` (picked up `CLAUDE_CHAT.md` from Claude-A).
+- Created idea subfolder `close_not_accessible/` with `src/`, `outputs/`, `notebooks/`.
+- Created shared `data/` at repo root (not inside the idea folder) so every idea can use it.
+- Wrote `scripts/download_data.sh` (curl from the link-shared Drive folder) and started downloading:
+  google_maps.csv, google_maps_reviews.csv, zillow_part1-3.csv, plus the two sample files.
+- Added `.gitignore` so raw CSVs and `.venv/` are never committed.
+- Creating Python venv at `Datafg/.venv` (python 3.12: pandas, numpy, scikit-learn, pyarrow, jupyter).
+- Machine note: Apple M1, 8 GB RAM, no CUDA GPU. Zillow must be read in chunks with `usecols`.
+- Next: inspect real column names, then build Step 1 (feasibility) and stop for Riley's review.
+
+### 2026-11-14 13:40  Claude-R (Riley): data downloaded + Step 1 feasibility done
+- All 7 Drive files downloaded into `data/`; sizes match Drive byte-for-byte.
+- Venv ready: `.venv` (python 3.12, pandas 3.1, sklearn 1.9, pyarrow). Pinned in `close_not_accessible/requirements.txt`.
+- Added `close_not_accessible/src/config.py` (paths, seed=42, allowed columns, service-type rules) and
+  `close_not_accessible/src/step1_feasibility.py`. Runs in ~15 s.
+- **Real column facts (other agents: don't assume the README):**
+  - Places: 147,429 rows (not ~100k), 41 cols. `permanently_closed` is the string "true"/"false". No zip column (zip only inside `address`).
+    Also has `top_reviews` (JSON, <=8 reviews/place, includes reviewer_name -> strip it) and `review_distribution` (1-5 star counts, 60% filled).
+  - Reviews file: 213,536 rows (not ~100k). 42,184 rows have `review_rating` = 0 (mostly hotel reviews), dropped.
+    It is NOT Bay-Area essential services: top places are Panera, Dunkin', hotels, even Las Vegas casinos.
+  - Zillow: 139 cols, 3 parts (1.5 + 3.9 + 2.0 GB). Not loaded yet.
+- **Decisions made (commented in code):** drop 12,167 permanently closed; keep 359 temporarily closed; classify by MAIN
+  `category` (all_categories adds dentists/convenience stores); the exact tag "Pharmacy" in all_categories also sets the pharmacy flag.
+  Target places: clinic 6,516 | grocery 2,558 | pharmacy 1,181.
+- **Result: below the 1,500 gate.** Reviews file -> only 1.3% of reviews join to a target place: 570 one-to-two-star
+  reviews, ALL clinics, 0 grocery, 0 pharmacy, and 55% of them come from 10 places (Carbon Health alone 311).
+- **Rescue found:** Places `top_reviews` gives 25,404 reviews with text across 5,718 target places, of which 7,145 are 1-2 star
+  (clinic 3,047 | grocery 2,510 | pharmacy 1,588), spread out (top 10 places = 1.1%). Union with the reviews file, deduped = 7,700.
+  Caveat: Google "most relevant" sort, not random, so 1-star share is inflated (28% vs ~18% in the reviews file).
+- **Clinic filter issue:** ~1,000 of 6,516 clinics (16%) are specialty programs by name (imaging, dermatology, spine, blood-draw labs,
+  "Sleep Surgery Program"). Proposed a name-keyword exclusion; not applied yet.
+- Caches (gitignored, row-level): `outputs/cache/places_target.parquet`, `reviews_matched.parquet`, `reviews_embedded.parquet`, `step1_feasibility_log.txt`.
+  Shareable aggregate: `outputs/step1_feasibility_summary.json`.
+- **Paused** for Riley: (1) review source, (2) clinic specialty filter. Nothing committed or pushed yet.
+
+### 2026-11-14 13:50  Claude-R (Riley): Riley's decisions applied, Step 1 passes
+- **Decision 1 (Riley): use BOTH review sources** (`config.REVIEW_SOURCES`). Reviews file + Places `top_reviews`, deduped on (place_id, text).
+- **Decision 2 (Riley): exclude specialty clinics by name** (`config.is_specialty_clinic_name`): dropped 1,315 (imaging, cardiology, surgery
+  centers, GI, rehab...). A name with a general word (urgent, primary, family, community, pediatric, walk-in, clinica...) is kept.
+- **Decision 3 (Riley): commit + push to main** after each step. `data/` and `outputs/cache/` are never committed.
+- Final target places: clinic 5,201 | grocery 2,558 | pharmacy 1,181 (pharmacy flag 1,213 incl. in-house pharmacies).
+- Combined reviews: 25,352 (all stars) at 5,157 places; **7,183 at 1-2 stars** (clinic 3,085 | grocery 2,510 | pharmacy 1,588). PASS.
+- Place zip parsed from `address` for 98.9% of target places; only the zip is kept.
+- Cache now: `outputs/cache/places_target.parquet` (8,940 rows), `outputs/cache/reviews_all.parquet` (25,352 rows, stable id `rid`).
+- Next: Step 2 (Zillow homes -> BallTree haversine distance to nearest clinic/pharmacy/grocery + counts within 1 mile -> zip medians).

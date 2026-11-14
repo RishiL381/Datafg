@@ -1,0 +1,17 @@
+# Raw data is huge (Zillow alone is ~7.4 GB) -> never commit it.
+# Re-download with: bash scripts/download_data.sh
+data/**/*.csv
+data/**/*.part
+data/**/*.parquet
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Large intermediate artifacts (zip-level outputs ARE committed; see close_not_accessible/outputs)
+close_not_accessible/outputs/cache/
+close_not_accessible/outputs/models/
+
+.DS_Store

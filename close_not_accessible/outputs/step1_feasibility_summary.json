@@ -1,0 +1,30 @@
+{
+  "places_open": 135262,
+  "permanently_closed_dropped": 12167,
+  "specialty_clinics_excluded": 1315,
+  "target_places": {
+    "clinic": 5201,
+    "grocery": 2558,
+    "pharmacy": 1181
+  },
+  "reviews_file_usable": 171344,
+  "reviews_file_match_rate_any_place": 0.0174,
+  "reviews_file_match_rate_target_place": 0.0128,
+  "reviews_file_matched": 2192,
+  "reviews_file_low_star": 569,
+  "embedded_top_reviews_with_text": 23191,
+  "embedded_low_star": 6629,
+  "combined_reviews": 25352,
+  "combined_low_star": 7183,
+  "combined_low_star_by_type": {
+    "clinic": 3085,
+    "grocery": 2510,
+    "pharmacy": 1588
+  },
+  "review_sources": [
+    "reviews_file",
+    "places_top_reviews"
+  ],
+  "passes_threshold": true,
+  "threshold": 1500
+}
