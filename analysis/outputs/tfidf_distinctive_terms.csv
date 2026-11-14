@@ -1,0 +1,153 @@
+comparison,group,term,distinctiveness,pct_of_group_reviews,pct_of_rest_reviews,n_reviews_group,n_places_group,chi2_p,group_size,rest_size,times_more_common
+service_type,clinic,appointment,0.0338,0.3105,0.02,958,550,3.94e-225,3085,4098,15.5192
+service_type,clinic,doctor,0.0287,0.2843,0.0342,877,545,3.89e-171,3085,4098,8.3212
+service_type,clinic,care,0.0255,0.3066,0.0622,946,556,8.83e-139,3085,4098,4.928
+service_type,clinic,medical,0.02,0.1935,0.0122,597,409,1.01e-141,3085,4098,15.8607
+service_type,clinic,office,0.0192,0.166,0.0134,512,355,7.58e-115,3085,4098,12.3659
+service_type,clinic,clinic,0.0177,0.1371,0.0039,423,299,3.8e-113,3085,4098,35.1186
+service_type,clinic,dr,0.0174,0.1303,0.0063,402,311,1.02e-100,3085,4098,20.5385
+service_type,clinic,patients,0.0164,0.1692,0.0203,522,384,7.83e-103,3085,4098,8.3543
+service_type,clinic,patient,0.0159,0.1618,0.0188,499,373,1.47e-99,3085,4098,8.6085
+service_type,clinic,visit,0.0146,0.1452,0.0278,448,311,2.13e-69,3085,4098,5.2202
+service_type,clinic,health,0.0145,0.1504,0.0229,464,311,4.8e-82,3085,4098,6.557
+service_type,clinic,insurance,0.0143,0.1452,0.0347,448,313,6.42e-59,3085,4098,4.1909
+service_type,clinic,desk,0.0131,0.1053,0.0076,325,235,7.97e-76,3085,4098,13.9264
+service_type,clinic,doctors,0.0129,0.1066,0.0078,329,262,2.23e-76,3085,4098,13.6572
+service_type,clinic,test,0.0118,0.0856,0.0066,264,182,6.71e-61,3085,4098,12.9884
+service_type,clinic,billing,0.0117,0.0814,0.0027,251,161,6.35e-67,3085,4098,30.3108
+service_type,clinic,urgent,0.0111,0.0859,0.0081,265,176,7.38e-58,3085,4098,10.6672
+service_type,clinic,appointments,0.0106,0.0781,0.0041,241,198,2.91e-60,3085,4098,18.8315
+service_type,clinic,nurse,0.0102,0.0736,0.0029,227,181,2.24e-59,3085,4098,25.1282
+service_type,clinic,urgent care,0.0099,0.0681,0.002,210,130,4.42e-57,3085,4098,34.8695
+service_type,clinic,room,0.0094,0.0762,0.0081,235,182,1.56e-49,3085,4098,9.4596
+service_type,clinic,lab,0.0089,0.0502,0.0015,155,119,1.56e-42,3085,4098,34.316
+service_type,clinic,provider,0.0087,0.0661,0.0032,204,165,3.8e-52,3085,4098,20.8451
+service_type,clinic,seen,0.0086,0.0924,0.0229,285,217,7.32e-37,3085,4098,4.0275
+service_type,clinic,hospital,0.0083,0.0583,0.0068,180,146,5.9e-37,3085,4098,8.5395
+service_type,grocery,store,0.0424,0.3861,0.0297,969,736,3.16e-294,2510,4673,12.9787
+service_type,grocery,food,0.0207,0.1311,0.0051,329,296,1.26e-116,2510,4673,25.5215
+service_type,grocery,items,0.0201,0.147,0.0081,369,326,6.73e-123,2510,4673,18.0786
+service_type,grocery,prices,0.0181,0.108,0.0071,271,238,1.98e-87,2510,4673,15.2889
+service_type,grocery,bought,0.017,0.1036,0.0028,260,242,6.02e-97,2510,4673,37.2351
+service_type,grocery,meat,0.0169,0.0857,0.0002,215,193,3.29e-88,2510,4673,400.2769
+service_type,grocery,cashier,0.0159,0.1179,0.0081,296,263,4.55e-94,2510,4673,14.5021
+service_type,grocery,buy,0.015,0.1076,0.0077,270,250,3.97e-85,2510,4673,13.9631
+service_type,grocery,customers,0.0134,0.1637,0.0441,411,355,3.75e-61,2510,4673,3.7145
+service_type,grocery,price,0.0133,0.088,0.0146,221,202,1.33e-49,2510,4673,6.0507
+service_type,grocery,expired,0.013,0.0618,0.0041,155,136,1.03e-50,2510,4673,15.188
+service_type,grocery,shopping,0.0126,0.1016,0.0036,255,225,5.54e-92,2510,4673,27.9263
+service_type,grocery,products,0.0124,0.0741,0.0028,186,175,3.61e-67,2510,4673,26.6374
+service_type,grocery,shop,0.0122,0.0928,0.0056,233,215,5.57e-77,2510,4673,16.6842
+service_type,grocery,grocery,0.0119,0.0801,0.0017,201,170,6.15e-77,2510,4673,46.7765
+service_type,grocery,produce,0.0108,0.0582,0.0017,146,128,9.89e-55,2510,4673,33.977
+service_type,grocery,market,0.0107,0.0629,0.0021,158,145,4.33e-58,2510,4673,29.4157
+service_type,grocery,checkout,0.0102,0.0677,0.0036,170,152,5.59e-58,2510,4673,18.6175
+service_type,grocery,fresh,0.0099,0.057,0.0021,143,137,4.67e-52,2510,4673,26.6231
+service_type,grocery,safeway,0.0099,0.0857,0.019,215,157,4.05e-39,2510,4673,4.4975
+service_type,grocery,customer,0.0097,0.2016,0.1036,506,422,1.42e-26,2510,4673,1.9464
+service_type,grocery,owner,0.0091,0.0574,0.0045,144,120,3.91e-45,2510,4673,12.7663
+service_type,grocery,bag,0.0089,0.0562,0.0043,141,131,1.41e-44,2510,4673,13.1254
+service_type,grocery,employees,0.0084,0.0865,0.024,217,196,3.98e-32,2510,4673,3.6071
+service_type,grocery,item,0.0079,0.0534,0.0028,134,128,2.37e-46,2510,4673,19.1904
+service_type,pharmacy,pharmacy,0.0718,0.5264,0.0118,836,466,0.0,1588,5595,44.6285
+service_type,pharmacy,prescription,0.039,0.289,0.0202,459,330,3.85e-246,1588,5595,14.3115
+service_type,pharmacy,pharmacist,0.0274,0.1776,0.0016,282,221,1.28e-207,1588,5595,110.3967
+service_type,pharmacy,medication,0.0256,0.1946,0.0243,309,247,6.51e-128,1588,5595,8.0051
+service_type,pharmacy,ready,0.0211,0.1398,0.0129,222,180,6.77e-108,1588,5595,10.8635
+service_type,pharmacy,cvs,0.0211,0.1241,0.0032,197,154,3.02e-133,1588,5595,38.5606
+service_type,pharmacy,prescriptions,0.0205,0.1373,0.0071,218,186,7.7e-129,1588,5595,19.202
+service_type,pharmacy,pick,0.0189,0.1631,0.0245,259,206,9.46e-96,1588,5595,6.6608
+service_type,pharmacy,line,0.0177,0.1574,0.042,250,181,5.06e-55,1588,5595,3.7482
+service_type,pharmacy,walgreens,0.0176,0.1026,0.0018,163,118,1.26e-115,1588,5595,57.4298
+service_type,pharmacy,wait,0.0133,0.1782,0.0847,283,224,4.12e-24,1588,5595,2.1036
+service_type,pharmacy,meds,0.013,0.073,0.0063,116,107,4.9e-59,1588,5595,11.6772
+service_type,pharmacy,filled,0.011,0.0812,0.0095,129,114,1.29e-56,1588,5595,8.5756
+service_type,pharmacy,medicine,0.0102,0.0617,0.0136,98,92,1.5e-27,1588,5595,4.5432
+service_type,pharmacy,minutes,0.0095,0.1725,0.0962,274,214,1.35e-15,1588,5595,1.7944
+service_type,pharmacy,medications,0.0093,0.0649,0.0073,103,94,2.49e-46,1588,5595,8.8512
+service_type,pharmacy,slow,0.0089,0.0504,0.0109,80,72,3.8e-23,1588,5595,4.6207
+service_type,pharmacy,long,0.0089,0.1222,0.0656,194,155,1.08e-12,1588,5595,1.8625
+service_type,pharmacy,service,0.0088,0.2368,0.1651,376,292,3.19e-09,1588,5595,1.4337
+service_type,pharmacy,worst pharmacy,0.0086,0.0416,0.0,66,60,1.67e-52,1588,5595,232.5378
+service_type,pharmacy,pharmacies,0.0083,0.0535,0.0009,85,77,1.98e-61,1588,5595,59.8961
+service_type,pharmacy,pharmacists,0.0082,0.0416,0.0002,66,63,2.56e-51,1588,5595,232.5378
+service_type,pharmacy,hold,0.0078,0.0649,0.0223,103,89,4.71e-17,1588,5595,2.9032
+service_type,pharmacy,customer,0.0074,0.1864,0.124,296,242,3.47e-09,1588,5595,1.5027
+service_type,pharmacy,refill,0.0074,0.0491,0.0054,78,74,3.96e-36,1588,5595,9.1606
+rent_tier,affordable (vs expensive),meat,0.0063,0.0405,0.0168,84,73,8.4e-06,2074,2018,2.4039
+rent_tier,affordable (vs expensive),burrito,0.0029,0.0106,0.0015,22,19,0.00019,2074,2018,7.1353
+rent_tier,affordable (vs expensive),walmart,0.002,0.0116,0.0025,24,22,0.000551,2074,2018,4.6704
+rent_tier,affordable (vs expensive),terrible customer,0.0019,0.0101,0.002,21,20,0.000863,2074,2018,5.1082
+rent_tier,affordable (vs expensive),hanging,0.0019,0.0077,0.0,16,16,7.96e-05,2074,2018,15.568
+rent_tier,expensive (vs affordable),visit,0.0062,0.0971,0.0468,196,130,1.76e-09,2018,2074,2.0767
+rent_tier,expensive (vs affordable),insurance,0.0048,0.0937,0.0569,189,131,1.77e-05,2018,2074,1.6461
+rent_tier,expensive (vs affordable),experience,0.0046,0.1764,0.1186,356,268,1.44e-06,2018,2074,1.4873
+rent_tier,expensive (vs affordable),billed,0.0039,0.0337,0.0053,68,54,6.35e-11,2018,2074,6.3534
+rent_tier,expensive (vs affordable),billing,0.0037,0.0451,0.0169,91,61,2.7e-07,2018,2074,2.6722
+rent_tier,expensive (vs affordable),test,0.0036,0.052,0.0256,105,69,1.64e-05,2018,2074,2.0361
+rent_tier,expensive (vs affordable),walgreens,0.0031,0.0362,0.0188,73,51,0.000786,2018,2074,1.9237
+rent_tier,expensive (vs affordable),avoid,0.0031,0.0575,0.0313,116,95,7.03e-05,2018,2074,1.8341
+rent_tier,expensive (vs affordable),blood,0.0031,0.0372,0.0183,75,62,0.000287,2018,2074,2.0285
+rent_tier,expensive (vs affordable),foods,0.0029,0.0223,0.0063,45,35,1.66e-05,2018,2074,3.5576
+rent_tier,expensive (vs affordable),annual,0.0028,0.0218,0.0034,44,32,1.3e-07,2018,2074,6.4601
+rent_tier,expensive (vs affordable),costs,0.0028,0.0248,0.0077,50,45,1.73e-05,2018,2074,3.2117
+rent_tier,expensive (vs affordable),later,0.0026,0.0758,0.0463,153,119,0.000129,2018,2074,1.638
+rent_tier,expensive (vs affordable),routine,0.0025,0.0208,0.0029,42,36,1.21e-07,2018,2074,7.1943
+rent_tier,expensive (vs affordable),asking,0.0023,0.0471,0.0246,95,88,0.000141,2018,2074,1.9144
+rent_tier,expensive (vs affordable),location,0.0023,0.0842,0.0569,170,131,0.000978,2018,2074,1.4807
+rent_tier,expensive (vs affordable),physical,0.0022,0.0258,0.0096,52,40,0.000101,2018,2074,2.6722
+rent_tier,expensive (vs affordable),email,0.0019,0.0213,0.0077,43,39,0.000294,2018,2074,2.7621
+rent_tier,expensive (vs affordable),mentioned,0.0018,0.0178,0.0063,36,32,0.00072,2018,2074,2.8461
+rent_tier,expensive (vs affordable),process,0.0018,0.0342,0.0174,69,66,0.000777,2018,2074,1.9699
+rent_tier,expensive (vs affordable),exam,0.0017,0.0223,0.0082,45,38,0.000248,2018,2074,2.7205
+rent_tier,expensive (vs affordable),visits,0.0017,0.0228,0.0096,46,43,0.000927,2018,2074,2.3638
+rent_tier,expensive (vs affordable),surprise,0.0016,0.0149,0.0039,30,28,0.000259,2018,2074,3.8541
+rent_tier,expensive (vs affordable),preventative,0.0016,0.0084,0.001,17,15,0.000463,2018,2074,8.7359
+rent_tier,expensive (vs affordable),results,0.0015,0.0312,0.0154,63,49,0.000919,2018,2074,2.0234
+rent_tier_within_service,grocery: affordable (vs expensive),meat,0.0138,0.0986,0.05,83,72,0.000679,842,680,1.9715
+county,Santa Clara,visit,0.0063,0.1126,0.066,192,130,2.81e-09,1705,4939,1.7061
+county,Santa Clara,doctor,0.0059,0.1818,0.1278,310,194,3.15e-07,1705,4939,1.4231
+county,Santa Clara,appointment,0.0058,0.1812,0.1298,309,177,1.27e-06,1705,4939,1.3964
+county,Santa Clara,test,0.005,0.0622,0.0336,106,72,5.03e-07,1705,4939,1.8497
+county,Santa Clara,work,0.0036,0.1067,0.0767,182,153,0.000236,1705,4939,1.3911
+county,Santa Clara,min,0.0034,0.0293,0.0136,50,39,2.36e-05,1705,4939,2.1618
+county,Santa Clara,came,0.0033,0.1126,0.0842,192,151,0.000837,1705,4939,1.337
+county,Santa Clara,patient,0.0031,0.0985,0.0705,168,124,0.000335,1705,4939,1.3984
+county,Santa Clara,clinic,0.0029,0.0739,0.0508,126,92,0.000562,1705,4939,1.4542
+county,Santa Clara,physical,0.0028,0.0328,0.0152,56,41,7.56e-06,1705,4939,2.1629
+county,Santa Clara,patients,0.0026,0.1032,0.0765,176,128,0.000999,1705,4939,1.3488
+county,Santa Clara,annual,0.0026,0.027,0.0113,46,34,6.98e-06,1705,4939,2.3795
+county,Santa Clara,questions,0.0024,0.0434,0.0267,74,62,0.000747,1705,4939,1.6239
+county,Santa Clara,ahead,0.0023,0.0264,0.0136,45,42,0.000436,1705,4939,1.9456
+county,Santa Clara,experience,0.0022,0.1853,0.1484,316,239,0.000938,1705,4939,1.2488
+county,Santa Clara,policy,0.0022,0.0223,0.0103,38,37,0.000234,1705,4939,2.1584
+county,Santa Clara,tests,0.0021,0.0311,0.016,53,42,0.000138,1705,4939,1.9434
+county,Santa Clara,exam,0.0021,0.0264,0.0136,45,34,0.000436,1705,4939,1.9456
+county,Santa Clara,sutter,0.002,0.0258,0.0136,44,36,0.000747,1705,4939,1.9024
+county,Santa Clara,preventive,0.0019,0.0129,0.0024,22,19,1.86e-07,1705,4939,5.3108
+county,Santa Clara,twice,0.0019,0.044,0.0261,75,67,0.000283,1705,4939,1.6842
+county,Santa Clara,refund,0.0018,0.0252,0.0126,43,40,0.000334,1705,4939,2.0091
+county,Santa Clara,baby,0.0017,0.0199,0.0089,34,30,0.000289,1705,4939,2.2384
+county,Santa Clara,surprise,0.0016,0.0199,0.0065,34,30,1.52e-06,1705,4939,3.0778
+county,Santa Clara,sutter health,0.0016,0.0158,0.0063,27,21,0.00027,1705,4939,2.523
+county,San Francisco,walgreens,0.0037,0.047,0.0211,50,35,1.18e-06,1064,5580,2.2222
+county,San Francisco,goods,0.003,0.016,0.0036,17,15,6.89e-07,1064,5580,4.4577
+county,San Francisco,selection,0.003,0.0244,0.0106,26,25,0.000249,1064,5580,2.3111
+county,San Francisco,street,0.0028,0.0226,0.0095,24,23,0.000288,1064,5580,2.3748
+county,San Francisco,foods,0.0026,0.0216,0.0095,23,18,0.000706,1064,5580,2.2759
+county,San Francisco,neighborhood,0.0022,0.0207,0.0075,22,21,6.2e-05,1064,5580,2.747
+county,San Francisco,insane,0.0021,0.0141,0.0048,15,15,0.000499,1064,5580,2.9135
+county,San Francisco,billed,0.002,0.0348,0.017,37,26,0.000167,1064,5580,2.0425
+county,San Francisco,delayed,0.0012,0.0141,0.0045,15,12,0.000211,1064,5580,3.1466
+county,Contra Costa,pharmacy,0.009,0.1771,0.1171,139,77,7.51e-06,785,5859,1.5123
+county,Contra Costa,pharmacist,0.0059,0.065,0.0364,51,43,0.000159,785,5859,1.7871
+county,Contra Costa,cvs,0.0055,0.0573,0.0256,45,32,1.1e-06,785,5859,2.2391
+county,Contra Costa,line,0.0054,0.0994,0.0654,78,61,0.000685,785,5859,1.52
+county,Contra Costa,left,0.0048,0.1083,0.0693,85,71,0.000161,785,5859,1.5626
+county,San Mateo,emergency,0.0047,0.0426,0.0159,26,16,3.64e-06,611,6033,2.6742
+county,Sonoma,prescription,0.0084,0.1398,0.0758,53,39,1.76e-05,379,6265,1.8444
+county,Sonoma,looking,0.0056,0.0712,0.0321,27,26,6.44e-05,379,6265,2.2205
+county,Sonoma,safeway,0.0045,0.0792,0.0407,30,22,0.000448,379,6265,1.9447
+county,Sonoma,hung,0.0042,0.0396,0.016,15,15,0.00069,379,6265,2.4796
+county,Solano,meat,0.0099,0.0641,0.0286,20,17,0.00043,312,6332,2.2425
+county,Solano,giving,0.0042,0.0513,0.0185,16,16,6.38e-05,312,6332,2.7754

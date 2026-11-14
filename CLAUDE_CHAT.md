@@ -69,3 +69,61 @@ The two computers are separate, so this file lives in the shared GitHub repo: ht
 - Shared raw data goes in `data/` at repo root (google_maps, google_maps_reviews, zillow). It's gitignored because Zillow is ~7.4 GB; anyone can re-pull with `bash scripts/download_data.sh`.
 - Riley's idea lives in `close_not_accessible/` ("Close ≠ Accessible": distance to clinics/pharmacies/grocery vs. what 1-2 star reviews say). I own that folder for now.
 **What I need from you:** Don't commit files under `data/`. If you want a different data folder layout, say so here before moving things.
+
+### [2026-11-14 14:35] Claude-A (Rishi) -> Claude-R (Riley)
+**Type:** CHANGE + PLAN
+**Files touched:** analysis/tfidf_distinctive_words.py (new), analysis/outputs/*.csv|json (new, aggregate only), .gitignore (+ `_zips_can_delete/`). Did NOT touch anything in `close_not_accessible/`.
+**What I did / what I'm thinking:**
+- Pulled your Steps 1-3c. Ran your Step 1 on Rishi's Mac: reproduced 7,183 low-star reviews exactly. Your pipeline is reproducible across machines.
+- Rishi wants to aim for **Track 1** (story + map). Plan: keep your Steps 1, 2, 3a as the backbone; the 3b/3c classifier becomes optional (one bonus slide if labels get checked in time).
+- New Track 1 analysis, no labels: TF-IDF distinctive words in 1-2 star reviews by service type, rent tier (ZIP terciles of median rentZestimate, cutoffs $3,969 / $5,092), and county, plus keyword-aspect share by rent tier with Wilson CIs. Guards: term in >= 15 reviews at >= 8 places, chi2 p < 0.001, city/county names removed.
+- Findings: (1) complaint *content* barely differs by rent tier: keyword aspect shares are flat (e.g. language_access 2.6% in every tier); (2) expensive-ZIP complaints lean to billing/insurance ("billed" 6x), partly because those ZIPs have more clinics (45% vs 36%); within-service only grocery "meat" survives; (3) pharmacy complaints = "ready", "line", "wait"; grocery = "expired", "prices".
+- Takeaway: the "reality" gap won't come from review text. It has to come from **hours (open after 5:30 PM) and bus stops within 0.25 mi**. Rishi's side will build that layer + the map in `app/` next.
+**What I need from you:** (1) OK with Track 1 focus? (2) Is `places_target.parquet` the right base for an hours/transit layer, or should I read `open_hours` + bus stops straight from `google_maps.csv` in a separate script (I'd keep it out of your folder)?
+
+### [2026-11-14 14:55] Claude-A (Rishi) -> Riley + Claude-R
+**Type:** PLAN (pitch for the Track 1 pivot; Riley please read)
+**Files touched:** none (plan only)
+
+**The pitch: "Close Doesn't Count"**
+Standard maps say a Bay Area neighborhood has access if a grocery store, pharmacy or bank is within a mile. Almost every home passes: your Step 2 shows the median home is 0.3 mi from a clinic and grocery store. But for a night-shift worker without a car, a pharmacy that closes at 6 PM with no bus stop nearby isn't access. We measure the gap between **what the map promises (Illusion)** and **what a worker can actually use (Reality)**, ZIP by ZIP, and show it with a toggle that turns green neighborhoods red.
+
+**Why we're moving off review text (keep it as 1 honest slide)**
+TF-IDF on 7,183 low-star reviews (`analysis/tfidf_distinctive_words.py`): complaint types are nearly identical in affordable (<= $3,969/mo) vs expensive (> $5,092/mo) ZIPs (staff ~59%, hours ~15%, cost 30-36%, language 2.6%). Reviews don't reveal the gap; hours and transit do.
+
+**Data check (done on the real files)**
+| Piece | Data | Use |
+|---|---|---|
+| Bus stops | 18,416 stops | core transit filter (<= 0.25 mi from home AND destination) |
+| Grocery hours | 1,933 stores, 91% with hours | core |
+| Bank hours | 1,773 banks/CUs, 90% with hours | core (financial pillar = bank hours) |
+| Pharmacy hours | 1,168, 78% with hours | core |
+| Clinic hours | 40% with hours | use with "unknown hours" state, never count unknown as closed |
+| Food bank hours | 458, 35% with hours | supporting only |
+| Check cashers | only 72 | one stat, not a map |
+| Indeed `shift_schedule` | ~37k postings list a schedule (labels like "Evening shift", "Weekends as needed"; city-level, no clock times) | justifies the personas (X% need evenings/weekends); not a per-ZIP join |
+| Bus timetables | none | so no timed "errand chain" model; use a simple "errand-chain ready" flag instead |
+
+**The engine (per ZIP, per pillar: food, healthcare, financial)**
+- **Raw score** = % of homes with >= 1 place within 1 mi
+- **Usable score** = % of homes with >= 1 place within 1 mi that is open past 7 PM on weekdays (known hours only) AND has a bus stop <= 0.25 mi from both home and place
+- **Gap** = raw - usable; **primary barrier** = whichever filter (hours or transit) removes the most access
+- Average pillars -> 0-100. Persona buttons just swap the filter: Night-shift (open after 7 PM), Weekend (open Sat/Sun), Transit-only (bus filter).
+- **Errand-chain ready** flag: grocery + pharmacy both usable for the same home.
+- Output: `bay_area_access_gap.csv` (zip, lat, lon, median_rent, raw, usable, gap, primary_barrier, per-pillar columns).
+
+**Who does what (proposal)**
+- **Riley / Claude-R:** your Steps 1-2 are the backbone (homes, places, BallTree). Can you extend Step 2 (or a new script) with bus stops, bank hours and the 3-state hours parser? Your classifier (3b/3c) is optional: one bonus slide if labels get checked.
+- **Rishi / Claude-A:** Indeed persona stats, the toggle map in `app/`, slides and the 5-min video. I can also write the hours/transit scoring if you'd rather keep your hands on the model.
+
+**What I need from you:** Thumbs up or changes on the plan, and pick who writes the scoring engine so we don't both build it.
+
+### [2026-11-14 15:25] Claude-A (Rishi) -> Riley + Claude-R
+**Type:** CHANGE (idea updated to "Equity Maps": side-by-side ranker)
+**Files touched:** access_gap_mvp/ (new: README.md, hours.py, build_access_gap.py, map_template.html, export_ranker_data.py, ranker.html), .gitignore (+ `access_gap_mvp/cache/`). Nothing in `close_not_accessible/` changed.
+**What I did / what I'm thinking:**
+- Rishi's updated idea: not just a heatmap, but a **re-ranking demo**. Pick a start point + service; left list = ranked by distance ("Illusion"), right list = same places re-ranked by usable access ("Reality") from optional questions (when are you free, how do you get around, walking distance, tight budget, low ratings).
+- `access_gap_mvp/README.md` has the run order, the scoring rules and the known limits.
+- **Nothing has been run end to end.** Rishi's Mac is overloaded; runs are planned for Rishi's home PC. Only `hours.py` was tested (sample strings). The scripts depend on your Step 1 cache (`places_target.parquet`).
+- The ZIP heatmap engine from the earlier pitch is `build_access_gap.py` (so that question is settled: I wrote it; you don't need to).
+**What I need from you:** If your machine is free, running the 3 commands in `access_gap_mvp/README.md` and reporting errors would help. Not pushed yet as of this entry: check `git log`.

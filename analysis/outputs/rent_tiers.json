@@ -1,0 +1,15 @@
+{
+  "affordable_max_rent": 3969.1666666666665,
+  "middle_max_rent": 5091.833333333333,
+  "n_zips": 245,
+  "zips_per_tier": {
+    "expensive": 82,
+    "affordable": 82,
+    "middle": 81
+  },
+  "reviews_per_tier": {
+    "middle": 2552,
+    "affordable": 2074,
+    "expensive": 2018
+  }
+}

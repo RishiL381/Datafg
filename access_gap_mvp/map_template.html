@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Close Doesn't Count</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; font-family: -apple-system, "Segoe UI", sans-serif; }
+  #map { height: 100%; }
+  #panel { position: absolute; z-index: 1000; top: 12px; left: 56px; background: #fff; padding: 12px 14px;
+           border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.25); max-width: 330px; }
+  #panel h1 { font-size: 17px; margin: 0 0 2px; }
+  #panel p { font-size: 12px; color: #555; margin: 2px 0 8px; }
+  button { display: block; width: 100%; text-align: left; margin: 4px 0; padding: 7px 9px; border: 1px solid #ccc;
+           border-radius: 7px; background: #f6f6f6; cursor: pointer; font-size: 13px; }
+  button.on { background: #1f2937; color: #fff; border-color: #1f2937; }
+  #stat { font-size: 13px; margin-top: 8px; font-weight: 600; }
+  .bar { height: 10px; border-radius: 5px; margin-top: 8px;
+         background: linear-gradient(90deg, #b91c1c, #f59e0b, #facc15, #16a34a); }
+  .ends { display: flex; justify-content: space-between; font-size: 11px; color: #555; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="panel">
+  <h1>Close Doesn't Count</h1>
+  <p>Share of homes with a grocery store, pharmacy, clinic and bank they can actually use. One dot per ZIP.</p>
+  <div id="btns"></div>
+  <div id="stat"></div>
+  <div class="bar"></div>
+  <div class="ends"><span>0: no access</span><span>100: full access</span></div>
+</div>
+<script>
+const DATA = /*DATA*/[];
+const VIEWS = [
+  ["raw_proximity_score", "The Illusion: anything within 1 mile"],
+  ["usable_access_score", "The Reality: open past 7 PM, no car"],
+  ["night_score", "Night-shift worker: open past 7 PM"],
+  ["transit_score", "Transit-only resident: walk or bus"],
+  ["weekend_score", "Weekend only: open Sat or Sun"],
+];
+const map = L.map("map").setView([37.75, -122.2], 9);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  { attribution: "&copy; OpenStreetMap contributors", maxZoom: 15 }).addTo(map);
+function color(s) {
+  const stops = [[0, [185, 28, 28]], [40, [245, 158, 11]], [70, [250, 204, 21]], [100, [22, 163, 74]]];
+  for (let i = 1; i < stops.length; i++) if (s <= stops[i][0]) {
+    const [a, ca] = stops[i - 1], [b, cb] = stops[i], t = (s - a) / (b - a);
+    return "rgb(" + ca.map((v, k) => Math.round(v + (cb[k] - v) * t)).join(",") + ")";
+  }
+  return "rgb(22,163,74)";
+}
+const dots = DATA.map(d => L.circleMarker([d.lat, d.lon],
+  { radius: 4 + Math.sqrt(d.n_homes) / 4, weight: 1, color: "#333", fillOpacity: 0.85 }).addTo(map));
+let cur = 0;
+function draw() {
+  const key = VIEWS[cur][0];
+  let tot = 0, n = 0;
+  DATA.forEach((d, i) => {
+    dots[i].setStyle({ fillColor: color(d[key]) });
+    dots[i].bindPopup(`<b>${d.zip} ${d.city}</b> (${d.county})<br>Median rent estimate: $${Math.round(d.median_rent).toLocaleString()}/mo` +
+      `<br>Illusion: <b>${d.raw_proximity_score}</b> &rarr; Reality: <b>${d.usable_access_score}</b> (gap ${d.access_gap})` +
+      `<br>Main barrier: ${d.primary_barrier} | weakest: ${d.weakest_pillar}` +
+      `<br>Night-shift ${d.night_score} | Transit ${d.transit_score} | Weekend ${d.weekend_score}` +
+      `<br>Grocery + pharmacy both usable: ${d.pct_chain_ready}% of homes`);
+    tot += d[key] * d.n_homes; n += d.n_homes;
+  });
+  document.getElementById("stat").textContent = "Bay Area average: " + (tot / n).toFixed(0) + " / 100";
+  document.querySelectorAll("#btns button").forEach((b, i) => b.classList.toggle("on", i === cur));
+}
+VIEWS.forEach((v, i) => {
+  const b = document.createElement("button");
+  b.textContent = v[1];
+  b.onclick = () => { cur = i; draw(); };
+  document.getElementById("btns").appendChild(b);
+});
+draw();
+</script>
+</body>
+</html>
