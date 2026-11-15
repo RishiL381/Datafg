@@ -1,6 +1,6 @@
-# Video script: The Supervision Cliff (target 4:30, hard limit 5:00)
+# Video script: The Supervision Cliff (8 slides, target 4:40, hard limit 5:00)
 
-About 640 words of narration at a calm ~150 words per minute = ~4:20, leaving room for the demo to breathe.
+About 600 words of narration at a calm ~150 words per minute = ~4:05, leaving room for the demo to breathe.
 **VO** = voiceover (what you say). **ON SCREEN** = what the viewer sees. **EDIT** = cut / zoom notes.
 Deck: https://claude.ai/artifact/QP6chVKJA6ccQArGn18RSP · App: https://rishil381.github.io/Datafg/
 
@@ -32,19 +32,16 @@ Deck: https://claude.ai/artifact/QP6chVKJA6ccQArGn18RSP · App: https://rishil38
 
 **EDIT:** Pause half a second on "Close doesn't count." This is the title idea.
 
-## 1:40 – 2:20 · The gap (slide 5)
+## 1:40 – 2:35 · The gap, and why (slide 5)
 **ON SCREEN:** Bar chart; bars rise in order.
 **VO:**
 > And it isn't equal. Near affordable housing, only thirty-eight percent of schools have a place open until six-thirty. In expensive neighborhoods, sixty-nine percent. At eight PM it's twenty-nine versus sixty-four. That's a thirty-one point gap, and it isn't luck: we resampled whole ZIP codes thousands of times, and ninety-five percent of the time the gap stayed between twenty and forty-three points. Kids near cheaper housing are about half as likely to have somewhere to go.
+>
+> And it's not just that wealthier areas have more places. Even comparing schools with the same number nearby, the gap holds, because the places near affordable schools close earlier: only twenty-two percent are open at six-thirty, versus forty percent in wealthier areas.
 
 **EDIT:** Optional lower-third with "p < 10⁻³⁰" for the stats-minded judges.
 
-## 2:20 – 2:50 · Is it real? (slide 6)
-**ON SCREEN:** Three check marks appear, then the "cause" card.
-**VO:**
-> We stress-tested it. Comparing schools with the same number of nearby places, expensive areas still have two and a half times the odds of coverage. Using family-size rentals gives the same gap. And it's not missing data. The real cause: the places near affordable schools close earlier. Only twenty-two percent are open at six-thirty, versus forty percent in wealthier areas.
-
-## 2:50 – 4:00 · Live demo (slide 7 → screen recording)
+## 2:35 – 3:50 · Live demo (slide 6 → screen recording)
 **ON SCREEN:** Screen recording of https://rishil381.github.io/Datafg/ at desktop size, full screen.
 **Record these shots (each 8–15 s, then cut together):**
 1. Tap the **St. Elizabeth · Oakland** pill. Stat card shows **9 / 2 / 0**.
@@ -59,12 +56,12 @@ Deck: https://claude.ai/artifact/QP6chVKJA6ccQArGn18RSP · App: https://rishil38
 
 **EDIT:** Speed up the slider drag 1.5× if it drags. Zoom into the stat card on each school pick. Mouse cursor on, click sounds off.
 
-## 4:00 – 4:30 · What would help (slide 8)
+## 3:50 – 4:20 · What would help (slide 7)
 **ON SCREEN:** Library table, then the before/after bars.
 **VO:**
 > What would help? We simulated keeping each of two hundred thirty-eight libraries open two hours later and picked the five that help the most schools in affordable areas. Together they give seventy-one schools their first option until six-thirty, and shrink the gap from thirty-one points to twenty-two. That closes about thirty percent of the gap, with buildings that already exist.
 
-## 4:30 – 4:50 · Ethics and close (slide 9)
+## 4:20 – 4:40 · Ethics and close (slide 8)
 **ON SCREEN:** Ethics slide; hold on the links at the end.
 **VO:**
 > We chose not to use review-based safety scores, which are biased against public spaces in poorer neighborhoods. Hours can be missing or outdated, and our distances don't capture disabilities or real bus schedules. Everything is public at the link. Thanks for watching.
@@ -78,4 +75,5 @@ Deck: https://claude.ai/artifact/QP6chVKJA6ccQArGn18RSP · App: https://rishil38
 - Record VO separately in a quiet room, then lay slides and demo clips under it.
 - Captions on (helps accessibility and judges watching muted).
 - Keep the demo clips silent except your voice.
-- If over time, trim first: slide 3's dataset list, then slide 6's second check.
+- If over time, trim first: slide 3's dataset list, then the second paragraph of the gap section.
+- If a judge asks "isn't it just that rich areas have more places?": same number of nearby places, expensive ZIPs still have 2.5x the odds of coverage at 8 PM (Mantel-Haenszel, p = 5e-13); same gap with 2+ bedroom rents (36% vs 68%); hours are listed for ~59% of places in every tier. Details in METHODS.md.
