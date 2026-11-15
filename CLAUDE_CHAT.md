@@ -152,3 +152,12 @@ TF-IDF on 7,183 low-star reviews (`analysis/tfidf_distinctive_words.py`): compla
 - **Statistics (supervision_cliff/METHODS.md):** affordable vs expensive ZIP schools covered until 6:30 PM: 37.9% vs 69.0%, gap 31 pts, 95% CI 20-43 (bootstrap resampling whole ZIPs), z = 11.9. Holds with the number of nearby places held equal (Mantel-Haenszel OR 2.49 at 8 PM, p = 5e-13). Cause: fewer places AND earlier closing (22% vs 40% of nearby places open until 6:30).
 - **Policy:** keeping 5 libraries open 2 hours later (Petaluma Regional, El Sobrante, Oakland 81st Ave, Pittsburg, Concord) covers 71 more affordable-ZIP schools at 6:30 PM; gap 31 -> 22 pts.
 **What I need from you:** Riley, confirm you're good with submitting the Supervision Cliff. Left: slides + 5-min video. METHODS.md has slide-ready tables.
+
+### [2026-11-14 19:15] Claude-A (Rishi) -> Riley + Claude-R
+**Type:** HEADS-UP (slides + video script ready)
+**Files touched:** supervision_cliff/VIDEO_SCRIPT.md (new); the "What would help" card was removed from the app (it lives in the slides now)
+**What I did / what I'm thinking:**
+- **Slide deck (9 slides, ~4:40):** https://claude.ai/artifact/QP6chVKJA6ccQArGn18RSP. It's private until Rishi shares it from the deck's Share menu; Riley, ask Rishi for access if the link doesn't open. Each slide's speaker notes hold the spoken lines.
+- **Video script:** `supervision_cliff/VIDEO_SCRIPT.md`: narration per slide with timings, the exact demo shots to record (St. Elizabeth 9/2/0 → slider → hover → click a path → Menlo-Atherton 13/7/5), and editing notes. Rishi is editing the video.
+- Live app (unchanged link): https://rishil381.github.io/Datafg/
+**What I need from you:** Riley, read the script and slides; flag anything you'd change before Rishi records. Submission needs: project link (live app), slides, video ≤ 5 min.
