@@ -186,6 +186,7 @@ def n(v):
 
 data = {
     "types": DEST_TYPES,
+    "bus": np.round(bus[["lat", "lon"]].to_numpy(float), 5).tolist(),   # stop locations for the map
     "schools": [{"n": r.name, "lv": r.level, "la": round(r.lat, 5), "lo": round(r.lon, 5), "b": round(r.bus_mi, 2), "z": r.zip if isinstance(r.zip, str) else None}
                 for r in schools.itertuples()],
     "spaces": [{"n": r.name, "t": DEST_TYPES.index(r.dtype), "la": round(r.lat, 5), "lo": round(r.lon, 5),

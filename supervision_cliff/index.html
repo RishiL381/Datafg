@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="outputs/school_data.js"></script>
+<script src="outputs/school_data.js?v=3"></script>
 <style>
   :root {
     --paper: #FAF9F6; --card: #FFFFFF; --line: #E2E8F0; --ink: #0F172A; --mute: #64748B; --faint: #F1F5F9;
@@ -138,6 +138,9 @@
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   #cliff .c:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   li:focus-visible, .pill:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  #pathnote { bottom: 22px; left: 12px; padding: 9px 12px; font-size: 12px; max-width: 320px; display: none; line-height: 1.45; }
+  #pathnote b { font-weight: 700; }
+  li.sel { background: var(--faint); border-radius: 8px; }
   footer { grid-column: 1 / -1; grid-row: 4; font-size: 12px; color: var(--mute); line-height: 1.6; padding: 4px 4px 12px; }
   footer b { color: var(--ink); font-weight: 600; }
   .leaflet-container { font-family: Inter, sans-serif; }
@@ -211,10 +214,13 @@
           <div><div class="v bignum" id="st-c">0</div><div class="k" id="st-ck">still open at 6:30 PM</div></div>
         </div>
       </div>
+      <div class="float" id="pathnote" role="status" aria-live="polite"></div>
       <div class="float" id="legend">
         <div><span class="shape" style="background:var(--open)"></span>Circle: covers your hours</div>
         <div><span class="shape sq" style="background:var(--cliff)"></span>Square: closed or out of reach</div>
         <div><span class="shape" style="background:#94A3B8"></span>Gray: only close by distance</div>
+        <div><span style="width:12px;display:flex;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:#64748B"></span></span>Bus stop</div>
+        <div style="color:var(--mute)">Click a place to see how a kid gets there</div>
       </div>
     </div>
 
@@ -256,7 +262,8 @@ L.control.zoom({ position: "topright" }).addTo(map);
 L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { attribution: "Tiles &copy; Esri", maxZoom: 17 }).addTo(map);
 L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", { maxZoom: 17, pane: "shadowPane" }).addTo(map);
 const layer = L.layerGroup().addTo(map);
-let school = null, cliffNames = [];
+let school = null, cliffNames = [], lastCand = [], nearStops = [];
+const busLayer = L.layerGroup().addTo(map), pathLayer = L.layerGroup().addTo(map);
 
 function miles(la1, lo1, la2, lo2) {
   const r = Math.PI / 180, a = Math.sin((la2 - la1) * r / 2) ** 2 + Math.cos(la1 * r) * Math.cos(la2 * r) * Math.sin((lo2 - lo1) * r / 2) ** 2;
@@ -296,13 +303,14 @@ function score(p, d, q) {
   return { s: Math.max(0, Math.min(100, Math.round(s))), chips, ok };
 }
 function row(c, rank, showScore) {
+  const idx = lastCand.indexOf(c);
   const moved = c.dRank - c.uRank;
   const mv = !showScore || moved === 0 ? "" : `<div class="move ${moved > 0 ? "up" : "down"}">${moved > 0 ? "▲" : "▼"} ${Math.abs(moved)}</div>`;
   // one headline tag (the deciding reason) up front; the rest on tap
   const main = c.chips.find(x => x[0] === "bad") || c.chips[0];
   const rest = c.chips.filter(x => x !== main);
   const chip = x => `<span class="chip ${x[0]}">${esc(x[1])}</span>`;
-  return `<li tabindex="0" data-name="${esc(c.p.n.toLowerCase())}"><span class="rk">${rank}</span><div><div class="nm">${esc(c.p.n)}<span class="caret">▾</span></div>` +
+  return `<li tabindex="0" data-idx="${idx}" data-name="${esc(c.p.n.toLowerCase())}"><span class="rk">${rank}</span><div><div class="nm">${esc(c.p.n)}<span class="caret">▾</span></div>` +
     `<div class="chips">${chip(main)}</div>` +
     `<div class="chips more"><span class="meta" style="flex-basis:100%">${TYPE_LABEL[D.types[c.p.t]]} · <span class="num">${c.d.toFixed(2)} mi</span>${c.p.r !== null ? " · " + c.p.r.toFixed(1) + "★" : ""}</span>${rest.map(chip).join("")}</div></div>` +
     `<div class="score">${showScore ? c.s : `<span class="num" style="font-size:13px;font-weight:600;color:var(--mute)">${c.d.toFixed(2)} mi</span>`}${mv}</div></li>`;
@@ -330,6 +338,42 @@ function drawCliff(cand, q) {
   $("cliffsr").textContent = "Reachable youth spaces still open by time: " + times.filter(t => t % 60 === 0 || t === q.off).map(t => `${clock(t)}, ${counts[times.indexOf(t)]}`).join("; ") + ".";
   return { atStart: counts[0], atOff: counts[times.indexOf(q.off)] ?? 0 };
 }
+function nearestStop(la, lo) {
+  let best = null, bd = Infinity;
+  for (const b of nearStops) { const d = miles(la, lo, b[0], b[1]); if (d < bd) { bd = d; best = b; } }
+  return [best, bd];
+}
+function clearPath() {
+  pathLayer.clearLayers(); $("pathnote").style.display = "none";
+  document.querySelectorAll("li.sel").forEach(li => li.classList.remove("sel"));
+}
+// Straight-line sketch of how a kid gets there, using the same rule as the score (not street routing).
+function showPath(c) {
+  clearPath();
+  document.querySelectorAll(`li[data-idx="${lastCand.indexOf(c)}"]`).forEach(li => li.classList.add("sel"));
+  const q = answers(), walk = q.age === "elementary" ? 0.25 : 0.5;
+  const S = [school.la, school.lo], P = [c.p.la, c.p.lo], note = $("pathnote");
+  const walkLine = (a, b) => L.polyline([a, b], { color: "#0F172A", weight: 2.5, opacity: .8, dashArray: "2 6", lineCap: "round", interactive: false }).addTo(pathLayer);
+  const stopDot = b => L.circleMarker(b, { radius: 5, color: "#fff", weight: 2, fillColor: "#0F172A", fillOpacity: 1, interactive: false }).addTo(pathLayer);
+  let html;
+  if (c.d <= walk) {
+    walkLine(S, P);
+    html = `<b>Walk ${c.d.toFixed(2)} mi</b> (about ${Math.max(1, Math.round(c.d * 20))} min) from school.`;
+  } else if (q.age !== "elementary" && school.b <= BUS_MI && c.p.b <= BUS_MI) {
+    const [a, da] = nearestStop(...S), [b, db] = nearestStop(...P);
+    walkLine(S, a); walkLine(b, P);
+    L.polyline([a, b], { color: "#059669", weight: 4, opacity: .85, dashArray: "8 6", interactive: false }).addTo(pathLayer);
+    stopDot(a); stopDot(b);
+    html = `<b>Walk ${da.toFixed(2)} mi → bus → walk ${db.toFixed(2)} mi.</b> Stops are close at both ends; the data has no timetables, so a direct route isn't guaranteed.`;
+  } else {
+    L.polyline([S, P], { color: "#E11D48", weight: 2, opacity: .7, dashArray: "4 8", interactive: false }).addTo(pathLayer);
+    html = q.age === "elementary" && c.d > walk
+      ? `<b>No way there alone.</b> ${c.d.toFixed(2)} mi is too far for an elementary kid to walk, and young kids shouldn't ride a bus alone.`
+      : `<b>No walking or bus link.</b> ${c.d.toFixed(2)} mi is past walking distance and there's no bus stop within 0.25 mi of ${school.b > BUS_MI ? "the school" : "this place"}.`;
+  }
+  note.innerHTML = `<div style="font-weight:600;margin-bottom:2px">${esc(c.p.n)}</div>${html}`;
+  note.style.display = "block";
+}
 function render() {
   layer.clearLayers();
   const q = answers();
@@ -347,6 +391,12 @@ function render() {
     cand.push({ p, d, ...score(p, d, q) });
   }
   cand.sort((a, b) => a.d - b.d).forEach((c, i) => c.dRank = i + 1);
+  lastCand = cand;
+  clearPath();
+  // bus stops inside the search circle (+ a margin so stops next to edge places show)
+  busLayer.clearLayers();
+  nearStops = (D.bus || []).filter(b => Math.abs(b[0] - school.la) < 0.035 && Math.abs(b[1] - school.lo) < 0.045 && miles(school.la, school.lo, b[0], b[1]) <= RADIUS + 0.3);
+  nearStops.forEach(b => L.circleMarker(b, { radius: 2.5, stroke: false, fillColor: "#64748B", fillOpacity: .55, interactive: false }).addTo(busLayer));
   const byUse = [...cand].sort((a, b) => b.s - a.s || a.d - b.d);
   byUse.forEach((c, i) => c.uRank = i + 1);
   const left = cand.slice(0, TOP), right = byUse.slice(0, TOP);   // pins on the map: top 8 of each
@@ -375,9 +425,9 @@ function render() {
   L.circle([school.la, school.lo], { radius: walk * 1609.34, color: "#64748B", weight: 1.5, opacity: .7, fill: true, fillColor: "#0F172A", fillOpacity: .03, dashArray: "5 6", interactive: false })
     .addTo(layer).bindTooltip(`${walk} mi walk`, { permanent: false });
   const shown = new Set(right.map(c => c.p));
-  left.filter(c => !shown.has(c.p)).forEach(c => L.marker([c.p.la, c.p.lo], { icon: L.divIcon({ className: "", html: `<div class="pin g">${c.dRank}</div>`, iconSize: [22, 22] }) })
+  left.filter(c => !shown.has(c.p)).forEach(c => L.marker([c.p.la, c.p.lo], { icon: L.divIcon({ className: "", html: `<div class="pin g">${c.dRank}</div>`, iconSize: [22, 22] }) }).on("click", () => showPath(c))
     .addTo(layer).bindTooltip(`${c.p.n} (distance #${c.dRank}, covers-your-hours #${c.uRank})`));
-  right.forEach((c, i) => L.marker([c.p.la, c.p.lo], { icon: L.divIcon({ className: "", html: `<div class="pin ${c.s >= 60 ? "ok" : "no"}">${i + 1}</div>`, iconSize: [22, 22] }), zIndexOffset: 500 })
+  right.forEach((c, i) => L.marker([c.p.la, c.p.lo], { icon: L.divIcon({ className: "", html: `<div class="pin ${c.s >= 60 ? "ok" : "no"}">${i + 1}</div>`, iconSize: [22, 22] }), zIndexOffset: 500 }).on("click", () => showPath(c))
     .addTo(layer).bindTooltip(`${c.p.n}: ${c.s >= 60 ? "covers your hours" : "doesn't cover your hours"} (#${i + 1}; distance #${c.dRank})`));
 }
 function pickSchool(s, zoom, presetIdx = -1) {
@@ -433,7 +483,12 @@ else {
   box.addEventListener("mousedown", e => { const li = e.target.closest("li[data-i]"); if (li) { e.preventDefault(); closeSugg(); pickSchool(shown[+li.dataset.i], true); } });
   inp.addEventListener("blur", () => setTimeout(closeSugg, 100));
   // lists: tap to expand, filter boxes
-  ["left", "right"].forEach(id => $(id).addEventListener("click", e => { const li = e.target.closest("li"); if (li) li.classList.toggle("open"); }));
+  ["left", "right"].forEach(id => $(id).addEventListener("click", e => {
+    const li = e.target.closest("li"); if (!li) return;
+    li.classList.toggle("open");
+    const c = lastCand[+li.dataset.idx]; if (c) showPath(c);
+  }));
+  map.on("click", clearPath);
   $("lfilter").addEventListener("input", () => applyFilter("lfilter", "left"));
   $("rfilter").addEventListener("input", () => applyFilter("rfilter", "right"));
   // cliff hover tooltip
