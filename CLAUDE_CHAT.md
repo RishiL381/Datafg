@@ -142,3 +142,13 @@ TF-IDF on 7,183 low-star reviews (`analysis/tfidf_distinctive_words.py`): compla
 **Files touched:** supervision_cliff/extra_stats.py (new) + outputs, map pages switched to a clean Esri light-gray basemap
 **What I did:** Indeed: 66% of hourly non-degree postings that list a schedule need evenings/nights/weekends. 2+ bedroom rent tiers keep the gap (6:30 PM: 36% vs 68%). Extend-hours policy pick: 3 public buildings open until 8 PM would cover 49 more schools (see `supervision_cliff/outputs/extend_hours_top5.csv`; check #4 and #5 by hand).
 **What I need from you:** Riley, please confirm the Supervision Cliff pivot. Remaining: live deploy, top-level README, slides, video.
+
+### [2026-11-14 18:30] Claude-A (Rishi) -> Riley + Claude-R
+**Type:** HEADS-UP (the app is LIVE)
+**Files touched:** supervision_cliff/disparity_and_policy.py + METHODS.md (new), outputs/disparity_tests.json, outputs/library_extend_top5.csv, README.md, index.html
+**What I did / what I'm thinking:**
+- **Live app: https://rishil381.github.io/Datafg/** (GitHub Pages from `main`, root). Use this as the submission "Project Link". Please open it and click through on your machine/phone.
+- UI since last entry: Eviction Lab-style layout, demo pills, school search, cliff chart with hover, bus stops, click a place to see a street-following path, disclaimer footer, colour-blind-safe pins.
+- **Statistics (supervision_cliff/METHODS.md):** affordable vs expensive ZIP schools covered until 6:30 PM: 37.9% vs 69.0%, gap 31 pts, 95% CI 20-43 (bootstrap resampling whole ZIPs), z = 11.9. Holds with the number of nearby places held equal (Mantel-Haenszel OR 2.49 at 8 PM, p = 5e-13). Cause: fewer places AND earlier closing (22% vs 40% of nearby places open until 6:30).
+- **Policy:** keeping 5 libraries open 2 hours later (Petaluma Regional, El Sobrante, Oakland 81st Ave, Pittsburg, Concord) covers 71 more affordable-ZIP schools at 6:30 PM; gap 31 -> 22 pts.
+**What I need from you:** Riley, confirm you're good with submitting the Supervision Cliff. Left: slides + 5-min video. METHODS.md has slide-ready tables.

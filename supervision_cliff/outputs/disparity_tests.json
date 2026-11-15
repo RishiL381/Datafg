@@ -1,0 +1,171 @@
+{
+  "tier_cutoffs_rent_per_month": {
+    "affordable_max": 3969,
+    "middle_max": 5092
+  },
+  "n_schools": {
+    "affordable": 782,
+    "expensive": 684
+  },
+  "A1_gap": {
+    "5pm": {
+      "affordable_pct": 71.7,
+      "expensive_pct": 83.2,
+      "gap_pct_points": 11.4,
+      "gap_95ci_cluster_bootstrap": [
+        3.5,
+        18.5
+      ],
+      "risk_ratio_expensive_vs_affordable": 1.16,
+      "z": 5.2,
+      "p_value_two_sided": 1.97e-07
+    },
+    "6:30pm": {
+      "affordable_pct": 37.9,
+      "expensive_pct": 69.0,
+      "gap_pct_points": 31.2,
+      "gap_95ci_cluster_bootstrap": [
+        20.0,
+        42.9
+      ],
+      "risk_ratio_expensive_vs_affordable": 1.82,
+      "z": 11.92,
+      "p_value_two_sided": 9.85e-33
+    },
+    "8pm": {
+      "affordable_pct": 28.6,
+      "expensive_pct": 64.0,
+      "gap_pct_points": 35.4,
+      "gap_95ci_cluster_bootstrap": [
+        24.1,
+        46.4
+      ],
+      "risk_ratio_expensive_vs_affordable": 2.24,
+      "z": 13.58,
+      "p_value_two_sided": 4.98e-42
+    },
+    "10pm": {
+      "affordable_pct": 5.9,
+      "expensive_pct": 33.2,
+      "gap_pct_points": 27.3,
+      "gap_95ci_cluster_bootstrap": [
+        16.5,
+        38.4
+      ],
+      "risk_ratio_expensive_vs_affordable": 5.64,
+      "z": 13.4,
+      "p_value_two_sided": 6.22e-41
+    }
+  },
+  "A2_density_control": {
+    "6:30pm": {
+      "by_nearby_places": {
+        "0-4": {
+          "affordable_pct": 16.5,
+          "expensive_pct": 39.6,
+          "n_affordable": 413,
+          "n_expensive": 159
+        },
+        "5-8": {
+          "affordable_pct": 37.2,
+          "expensive_pct": 58.5,
+          "n_affordable": 156,
+          "n_expensive": 130
+        },
+        "9-14": {
+          "affordable_pct": 72.0,
+          "expensive_pct": 67.3,
+          "n_affordable": 143,
+          "n_expensive": 165
+        },
+        "15+": {
+          "affordable_pct": 95.7,
+          "expensive_pct": 96.5,
+          "n_affordable": 70,
+          "n_expensive": 230
+        }
+      },
+      "mantel_haenszel_odds_ratio_expensive_vs_affordable": 1.91,
+      "cmh_chi2": 26.3,
+      "p_value": 2.9e-07
+    },
+    "8pm": {
+      "by_nearby_places": {
+        "0-4": {
+          "affordable_pct": 11.1,
+          "expensive_pct": 33.3,
+          "n_affordable": 413,
+          "n_expensive": 159
+        },
+        "5-8": {
+          "affordable_pct": 28.8,
+          "expensive_pct": 47.7,
+          "n_affordable": 156,
+          "n_expensive": 130
+        },
+        "9-14": {
+          "affordable_pct": 53.1,
+          "expensive_pct": 63.6,
+          "n_affordable": 143,
+          "n_expensive": 165
+        },
+        "15+": {
+          "affordable_pct": 81.4,
+          "expensive_pct": 94.8,
+          "n_affordable": 70,
+          "n_expensive": 230
+        }
+      },
+      "mantel_haenszel_odds_ratio_expensive_vs_affordable": 2.49,
+      "cmh_chi2": 52.3,
+      "p_value": 4.78e-13
+    }
+  },
+  "A3_share_of_reachable_places_open_until": {
+    "5pm": {
+      "affordable": 79.0,
+      "expensive": 86.4
+    },
+    "6:30pm": {
+      "affordable": 22.3,
+      "expensive": 40.2
+    },
+    "8pm": {
+      "affordable": 12.9,
+      "expensive": 29.9
+    },
+    "10pm": {
+      "affordable": 2.7,
+      "expensive": 8.9
+    }
+  },
+  "A3_reachable_places_with_hours": {
+    "expensive": 361,
+    "affordable": 224
+  },
+  "B_library_plus_2h": {
+    "candidate_libraries": 238,
+    "effect": {
+      "6:30pm": {
+        "affordable_before_pct": 37.9,
+        "affordable_after_pct": 46.9,
+        "expensive_before_pct": 69.0,
+        "expensive_after_pct": 69.0,
+        "gap_before_pts": 31.2,
+        "gap_after_pts": 22.1,
+        "schools_newly_covered_all_tiers": 71,
+        "affordable_schools_newly_covered": 71
+      },
+      "8pm": {
+        "affordable_before_pct": 28.6,
+        "affordable_after_pct": 35.2,
+        "expensive_before_pct": 64.0,
+        "expensive_after_pct": 64.0,
+        "gap_before_pts": 35.4,
+        "gap_after_pts": 28.9,
+        "schools_newly_covered_all_tiers": 51,
+        "affordable_schools_newly_covered": 51
+      }
+    }
+  }
+}
