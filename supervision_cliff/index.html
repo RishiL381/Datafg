@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Supervision Cliff</title>
+<meta name="description" content="School ends at 3 PM. Youth spaces close at 6. Many Bay Area parents get off at 8. Pick a school and see where a kid can actually be until you are off work.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -148,10 +149,17 @@
   @media (max-width: 900px) {
     #app { grid-template-columns: 1fr; height: auto; padding: 12px 16px; }
     #side, #mapwrap, #cliffcard, #lists { grid-column: 1; grid-row: auto; }
-    #mapwrap { height: 360px; }
+    #mapwrap { height: 460px; }
+    /* phone: compact overlays so the map stays visible */
+    #stat { top: 8px; left: 8px; padding: 10px 12px; }
+    #stat .school { font-size: 12px; } #stat .lv { margin-bottom: 6px; }
+    .row3 .bignum { font-size: 22px; }
+    #legend { bottom: 18px; right: 8px; padding: 6px 9px; font-size: 11px; }
+    #legend div:last-child { display: none; }
+    #pathnote { left: 8px; right: 8px; bottom: 18px; max-width: none; }
     #lists { grid-template-columns: 1fr; }
     footer { grid-column: 1; grid-row: auto; }
-    #stat { width: 210px; }
+    #stat { width: 200px; }
   }
 </style>
 </head>
@@ -474,7 +482,10 @@ function pickSchool(s, zoom, presetIdx = -1) {
   document.querySelectorAll(".pill").forEach((b, i) => b.classList.toggle("on", i === presetIdx));
   // fit the 1.5 mi search radius; extra left padding keeps pins clear of the stat card
   map.invalidateSize();
-  map.fitBounds(L.latLng(s.la, s.lo).toBounds(RADIUS * 1609.34 * 2), { paddingTopLeft: [290, 20], paddingBottomRight: [20, 20], animate: false });
+  const small = map.getSize().x < 600;   // phone: stat card sits on top, legend bottom-right
+  map.fitBounds(L.latLng(s.la, s.lo).toBounds(RADIUS * 1609.34 * 2),
+    small ? { paddingTopLeft: [12, 150], paddingBottomRight: [12, 100], animate: false }
+          : { paddingTopLeft: [290, 20], paddingBottomRight: [20, 20], animate: false });
   render();
 }
 function nearestSchool(la, lo) {
