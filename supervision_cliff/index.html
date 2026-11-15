@@ -343,17 +343,35 @@ function nearestStop(la, lo) {
   for (const b of nearStops) { const d = miles(la, lo, b[0], b[1]); if (d < bd) { bd = d; best = b; } }
   return [best, bd];
 }
+const routeCache = new Map();
+let pathToken = 0;
+// mode: "foot" (walking) or "car" (road path, used to sketch the bus leg)
+async function osrmRoute(a, b, mode) {
+  const key = mode + a.join() + "|" + b.join();
+  if (routeCache.has(key)) return routeCache.get(key);
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 4000);
+  try {
+    const prof = mode === "foot" ? "routed-foot/route/v1/foot" : "routed-car/route/v1/driving";
+    const url = `https://routing.openstreetmap.de/${prof}/${a[1]},${a[0]};${b[1]},${b[0]}?overview=full&geometries=geojson`;
+    const j = await (await fetch(url, { signal: ctl.signal })).json();
+    const r = j.code === "Ok" && j.routes[0] ? { pts: j.routes[0].geometry.coordinates.map(([lo, la]) => [la, lo]), mi: j.routes[0].distance / 1609.34 } : null;
+    routeCache.set(key, r);
+    return r;
+  } catch (e) { return null; } finally { clearTimeout(timer); }
+}
 function clearPath() {
   pathLayer.clearLayers(); $("pathnote").style.display = "none";
   document.querySelectorAll("li.sel").forEach(li => li.classList.remove("sel"));
 }
 // Straight-line sketch of how a kid gets there, using the same rule as the score (not street routing).
-function showPath(c) {
+async function showPath(c) {
   clearPath();
+  const token = ++pathToken;
   document.querySelectorAll(`li[data-idx="${lastCand.indexOf(c)}"]`).forEach(li => li.classList.add("sel"));
   const q = answers(), walk = q.age === "elementary" ? 0.25 : 0.5;
   const S = [school.la, school.lo], P = [c.p.la, c.p.lo], note = $("pathnote");
-  const walkLine = (a, b) => L.polyline([a, b], { color: "#0F172A", weight: 2.5, opacity: .8, dashArray: "2 6", lineCap: "round", interactive: false }).addTo(pathLayer);
+  const legs = [];   // [polyline, from, to, mode]; drawn straight first, then swapped for the real route
+  const walkLine = (a, b) => { const l = L.polyline([a, b], { color: "#0F172A", weight: 3, opacity: .35, dashArray: "1 7", lineCap: "round", interactive: false }).addTo(pathLayer); legs.push([l, a, b, "foot"]); return l; };
   const stopDot = b => L.circleMarker(b, { radius: 5, color: "#fff", weight: 2, fillColor: "#0F172A", fillOpacity: 1, interactive: false }).addTo(pathLayer);
   let html;
   if (c.d <= walk) {
@@ -362,7 +380,8 @@ function showPath(c) {
   } else if (q.age !== "elementary" && school.b <= BUS_MI && c.p.b <= BUS_MI) {
     const [a, da] = nearestStop(...S), [b, db] = nearestStop(...P);
     walkLine(S, a); walkLine(b, P);
-    L.polyline([a, b], { color: "#059669", weight: 4, opacity: .85, dashArray: "8 6", interactive: false }).addTo(pathLayer);
+    const busLine = L.polyline([a, b], { color: "#059669", weight: 4, opacity: .35, interactive: false }).addTo(pathLayer);
+    legs.push([busLine, a, b, "car"]);
     stopDot(a); stopDot(b);
     html = `<b>Walk ${da.toFixed(2)} mi → bus → walk ${db.toFixed(2)} mi.</b> Stops are close at both ends; the data has no timetables, so a direct route isn't guaranteed.`;
   } else {
@@ -371,8 +390,23 @@ function showPath(c) {
       ? `<b>No way there alone.</b> ${c.d.toFixed(2)} mi is too far for an elementary kid to walk, and young kids shouldn't ride a bus alone.`
       : `<b>No walking or bus link.</b> ${c.d.toFixed(2)} mi is past walking distance and there's no bus stop within 0.25 mi of ${school.b > BUS_MI ? "the school" : "this place"}.`;
   }
-  note.innerHTML = `<div style="font-weight:600;margin-bottom:2px">${esc(c.p.n)}</div>${html}`;
+  note.innerHTML = `<div style="font-weight:600;margin-bottom:2px">${esc(c.p.n)}</div>${html}` +
+    (legs.length ? `<div id="routenote" style="color:var(--mute);margin-top:3px">Finding route along streets…</div>` : "");
   note.style.display = "block";
+  let walkMi = 0, ok = true, hasBus = false;
+  for (const [line, a, b, mode] of legs) {
+    const r = await osrmRoute(a, b, mode);
+    if (token !== pathToken) return;                 // a different place was clicked meanwhile
+    if (r) { line.setLatLngs([a, ...r.pts, b]); if (mode === "foot") walkMi += r.mi; else hasBus = true; }
+    else ok = false;
+    line.setStyle({ opacity: .85 });
+  }
+  const rn = $("routenote");
+  if (!rn) return;
+  rn.textContent = !ok ? "Street route unavailable right now, so this shows straight lines."
+    : `Walking along streets: ${walkMi.toFixed(2)} mi, about ${Math.max(1, Math.round(walkMi * 20))} min.` +
+      (hasBus ? " Green follows roads between the stops: an approximate path, not a specific bus line." : "") +
+      " Routes: OSRM / OpenStreetMap.";
 }
 function render() {
   layer.clearLayers();
