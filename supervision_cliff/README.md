@@ -20,7 +20,7 @@ It also reads Riley's committed `close_not_accessible/outputs/step2_zip_physical
 - 94% of schools have a youth space within 1.5 mi. Only **51%** have one a kid can reach that is open 3:30 PM to
   6:30 PM; **40%** to 8 PM; **15%** to 10 PM.
 - Equity gap: schools in affordable ZIPs (median rent estimate <= $3,969/mo) vs expensive ZIPs (> $5,092/mo):
-  usable space until 6:30 PM **37% vs 69%**; until 8 PM **29% vs 64%**; until 10 PM **6% vs 33%**.
+  usable space until 6:30 PM **37% vs 69%**; until 8 PM **29% vs 64%**; until 10 PM **6% vs 33%**. (Recomputed in `disparity_and_policy.py`: 38% vs 69%; the small difference comes from rounded coordinates in the page data.)
   Check: hours are listed for ~59% of nearby spaces in every rent tier, so the gap is not a missing-data artifact.
   Expensive-ZIP schools also have about twice as many spaces nearby (13.6 vs 6.4).
 - Of youth spaces with listed hours, only 6% of after-school programs and 32% of libraries stay open past 8 PM.

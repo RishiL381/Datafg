@@ -35,7 +35,7 @@ Deck: https://claude.ai/artifact/QP6chVKJA6ccQArGn18RSP · App: https://rishil38
 ## 1:40 – 2:20 · The gap (slide 5)
 **ON SCREEN:** Bar chart; bars rise in order.
 **VO:**
-> And it isn't equal. Near affordable housing, only thirty-eight percent of schools have a place open until six-thirty. In expensive neighborhoods, sixty-nine percent. At eight PM it's twenty-nine versus sixty-four. That's a thirty-one point gap, and it isn't luck: we resampled whole ZIP codes thousands of times and the gap never fell below about twenty points. Kids near cheaper housing are about half as likely to have somewhere to go.
+> And it isn't equal. Near affordable housing, only thirty-eight percent of schools have a place open until six-thirty. In expensive neighborhoods, sixty-nine percent. At eight PM it's twenty-nine versus sixty-four. That's a thirty-one point gap, and it isn't luck: we resampled whole ZIP codes thousands of times, and ninety-five percent of the time the gap stayed between twenty and forty-three points. Kids near cheaper housing are about half as likely to have somewhere to go.
 
 **EDIT:** Optional lower-third with "p < 10⁻³⁰" for the stats-minded judges.
 
@@ -62,7 +62,7 @@ Deck: https://claude.ai/artifact/QP6chVKJA6ccQArGn18RSP · App: https://rishil38
 ## 4:00 – 4:30 · What would help (slide 8)
 **ON SCREEN:** Library table, then the before/after bars.
 **VO:**
-> What would help? We simulated keeping each of two hundred thirty-eight libraries open two hours later and picked the five that help the most schools in affordable areas. Together they give seventy-one schools their first option until six-thirty, and shrink the gap from thirty-one points to twenty-two: about a third of the gap, with buildings that already exist.
+> What would help? We simulated keeping each of two hundred thirty-eight libraries open two hours later and picked the five that help the most schools in affordable areas. Together they give seventy-one schools their first option until six-thirty, and shrink the gap from thirty-one points to twenty-two. That closes about thirty percent of the gap, with buildings that already exist.
 
 ## 4:30 – 4:50 · Ethics and close (slide 9)
 **ON SCREEN:** Ethics slide; hold on the links at the end.
