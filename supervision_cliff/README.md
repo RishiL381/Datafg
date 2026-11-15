@@ -53,10 +53,24 @@ Run after `build_school_data.py`; about 1 minute the first time (reads Indeed + 
   so 25% of all hourly non-degree postings are known to need these hours (a floor, not an estimate).
 - **2+ bedroom check:** with rent tiers built from 2+ bedroom homes only (affordable <= $4,057/mo,
   expensive > $5,238/mo), the gap holds: usable space until 6:30 PM **36% vs 68%**; until 8 PM **28% vs 64%**.
-- **Extend hours to 8 PM (policy pick):** 1,520 schools have no reachable youth space open until 8 PM. Among public
-  libraries / community centers in affordable ZIPs that close at 6-7 PM, the 5 best (picked greedily, no double
-  counting) would cover **71 more schools**, 62 of them in affordable ZIPs. #1 Roosevelt Community Center
-  (San Jose, 18 schools), #2 Petaluma Regional Library (16), #3 El Sobrante Library (15).
-  Check #4 and #5 by hand before using them: "Project Second Chance" is a library literacy program, and the
-  Oakland LGBTQ Community Center is a nonprofit, not a city building.
-  "Covers" uses the general reach rule (walk 0.5 mi or bus at both ends), not the stricter elementary rule.
+- *(Earlier draft, superseded: `outputs/extend_hours_top5.csv` mixed libraries and community centers with an
+  "until 8 PM" rule. Use the library scenario below.)*
+
+## Statistical tests and the 5-library scenario (`disparity_and_policy.py`, explained in [METHODS.md](METHODS.md))
+- **Gap is not chance:** 6:30 PM coverage 37.9% (affordable) vs 69.0% (expensive), 31 pts, 95% CI 20-43 from a
+  bootstrap that resamples whole ZIP codes, two-proportion z = 11.9. At 8 PM: 28.6% vs 64.0%, risk ratio 2.24.
+- **Not just "more places":** with schools grouped by number of nearby spaces, the Mantel-Haenszel odds ratio is
+  2.49 at 8 PM (p = 5e-13). Places near affordable-ZIP schools close earlier (22% vs 40% open until 6:30 PM).
+- **Fix:** add 2 hours to the weekday closing time of 5 library branches (greedy pick among 238, counting
+  affordable-ZIP schools that gain their first covering space at 6:30 PM and 8 PM, no double counting):
+
+  | # | Library | Now → after | New schools 6:30 PM / 8 PM |
+  |---|---|---|---|
+  | 1 | Petaluma Regional Library | 6 → 8 PM | 16 / 16 |
+  | 2 | El Sobrante Library | 6 → 8 PM | 14 / 15 |
+  | 3 | Oakland Public Library: 81st Avenue Branch | 5:30 → 7:30 PM | 21 / 0 |
+  | 4 | Pittsburg Library | 6 → 8 PM | 10 / 10 |
+  | 5 | Concord Library | 6 → 8 PM | 10 / 10 |
+
+  71 schools gain coverage at 6:30 PM (51 at 8 PM), all in affordable ZIPs. Affordable coverage at 6:30 PM:
+  37.9% → 46.9%; gap 31.2 → 22.1 pts. Uses the general reach rule (walk 0.5 mi or bus at both ends).

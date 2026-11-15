@@ -142,7 +142,22 @@
   #pathnote { bottom: 22px; left: 12px; padding: 9px 12px; font-size: 12px; max-width: 320px; display: none; line-height: 1.45; }
   #pathnote b { font-weight: 700; }
   li.sel { background: var(--faint); border-radius: 8px; }
-  footer { grid-column: 1 / -1; grid-row: 4; font-size: 12px; color: var(--mute); line-height: 1.6; padding: 4px 4px 12px; }
+  #fix { grid-column: 1 / -1; grid-row: 4; }
+  #fix h2 { font-size: 15px; margin: 0; }
+  #fix .lead { font-size: 14px; line-height: 1.5; margin: 6px 0 14px; max-width: 760px; }
+  .fixgrid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .libs { list-style: none; margin: 0; padding: 0; }
+  .libs li { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); cursor: pointer; }
+  .libs .hrs { font-size: 12px; color: var(--mute); }
+  .libs .gain { text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .libs .gain small { display: block; font-size: 11px; font-weight: 500; color: var(--mute); }
+  .ba { font-size: 12px; color: var(--mute); }
+  .ba .row { display: grid; grid-template-columns: 92px 1fr 46px; gap: 8px; align-items: center; margin: 8px 0; }
+  .ba .track { height: 12px; background: var(--faint); border-radius: 6px; overflow: hidden; }
+  .ba .fill { height: 100%; border-radius: 6px; }
+  .ba .v { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; text-align: right; }
+  .ba .big { font-size: 28px; font-weight: 800; color: var(--ink); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  footer { grid-column: 1 / -1; grid-row: 5; font-size: 12px; color: var(--mute); line-height: 1.6; padding: 4px 4px 12px; }
   footer b { color: var(--ink); font-weight: 600; }
   .leaflet-container { font-family: Inter, sans-serif; }
 
@@ -158,7 +173,8 @@
     #legend div:last-child { display: none; }
     #pathnote { left: 8px; right: 8px; bottom: 18px; max-width: none; }
     #lists { grid-template-columns: 1fr; }
-    footer { grid-column: 1; grid-row: auto; }
+    footer, #fix { grid-column: 1; grid-row: auto; }
+    .fixgrid { grid-template-columns: 1fr; }
     #stat { width: 200px; }
   }
 </style>
@@ -245,6 +261,23 @@
       <section class="card"><div class="lhead"><h2>Ranked by what covers your hours</h2><span class="count" id="rcount"></span></div><div class="how">Same places, re-ranked for 3 PM to your clock-out. Tap a place for details.</div>
         <input type="text" class="lfilter" id="rfilter" placeholder="Filter places" aria-label="Filter places ranked by usefulness"><div class="scroll"><ol id="right"></ol></div></section>
     </div>
+    <section class="card" id="fix">
+      <h2>What would help</h2>
+      <p class="lead">Keep <b>five libraries open two hours later</b> on weekdays. All five are in affordable ZIP codes, and
+        <b class="num">71 schools</b> there would get their first reachable youth space open until 6:30 PM (<span class="num">51</span> until 8 PM).
+        Tap a library to see it on the map.</p>
+      <div class="fixgrid">
+        <ol class="libs" id="libs"></ol>
+        <div class="ba">
+          <span class="eyebrow">Schools covered until 6:30 PM</span>
+          <div class="row"><span>Expensive ZIPs</span><div class="track"><div class="fill" style="width:69%;background:#94A3B8"></div></div><span class="v">69%</span></div>
+          <div class="row"><span>Affordable now</span><div class="track"><div class="fill" style="width:37.9%;background:#CBD5E1"></div></div><span class="v">38%</span></div>
+          <div class="row"><span>Affordable after</span><div class="track"><div class="fill" style="width:46.9%;background:var(--open)"></div></div><span class="v">47%</span></div>
+          <div style="margin-top:12px"><span class="big">31 → 22</span> point gap, about <b>30% closed</b> with 10 extra library hours a day.</div>
+          <div style="margin-top:6px">Method and statistics: <a href="https://github.com/RishiL381/Datafg/blob/main/supervision_cliff/METHODS.md" target="_blank" rel="noopener">METHODS.md</a></div>
+        </div>
+      </div>
+    </section>
     <footer>
       <b>Research demo for the 2026 Datathon for Social Good, not a childcare or safety recommendation.</b>
       Places, opening hours and bus stops come from Google Maps listings (via Bright Data) and may be out of date or incomplete;
@@ -264,6 +297,14 @@ const PRESETS = [
   { label: "St. Elizabeth · Oakland", la: 37.77878, lo: -122.22386 },
   { label: "Grant Elementary · San Jose", la: 37.35146, lo: -121.88857 },
   { label: "Menlo-Atherton High · Atherton", la: 37.46077, lo: -122.17511 },
+];
+// Five-library scenario (outputs/library_extend_top5.csv, from disparity_and_policy.py)
+const LIBS = [
+  { n: "Petaluma Regional Library", from: "6", to: "8 PM", g630: 16, g8: 16 },
+  { n: "El Sobrante Library - Contra Costa County Library", label: "El Sobrante Library", from: "6", to: "8 PM", g630: 14, g8: 15 },
+  { n: "Oakland Public Library: 81st Avenue Branch", label: "Oakland Library, 81st Ave Branch", from: "5:30", to: "7:30 PM", g630: 21, g8: 0 },
+  { n: "Pittsburg Library - Contra Costa County Library", label: "Pittsburg Library", from: "6", to: "8 PM", g630: 10, g8: 10 },
+  { n: "Concord Library - Contra Costa County Library", label: "Concord Library", from: "6", to: "8 PM", g630: 10, g8: 10 },
 ];
 const map = L.map("map", { zoomControl: false, zoomSnap: 0.25 }).setView([37.6, -122.2], 9);
 L.control.zoom({ position: "topright" }).addTo(map);
@@ -561,6 +602,22 @@ else {
     $("presets").appendChild(b);
   });
   new ResizeObserver(() => map.invalidateSize()).observe($("mapwrap"));
+  // "What would help" list: tap a library -> show it on the map
+  $("libs").innerHTML = LIBS.map((l, i) => `<li tabindex="0" data-i="${i}"><span class="rk">${i + 1}</span><div><div class="nm">${esc(l.label || l.n)}</div>` +
+    `<div class="hrs">Closes ${l.from} → ${l.to}</div></div><div class="gain">+${l.g630}<small>schools at 6:30 PM</small></div></li>`).join("");
+  const libLayer = L.layerGroup().addTo(map);
+  function showLib(i) {
+    const l = LIBS[i], p = D.spaces.find(x => x.n === l.n); if (!p) return;
+    const s = nearestSchool(p.la, p.lo);
+    pickSchool(s, false);
+    map.setView([p.la, p.lo], 13.5);
+    libLayer.clearLayers();
+    L.marker([p.la, p.lo], { icon: L.divIcon({ className: "", html: `<div class="pin ok" style="width:28px;height:28px;line-height:24px">★</div>`, iconSize: [28, 28] }), zIndexOffset: 1000 })
+      .addTo(libLayer).bindTooltip(`${l.label || l.n}: open until ${l.to} would cover ${l.g630} more schools at 6:30 PM`, { permanent: true, direction: "top", offset: [0, -14] });
+    $("mapwrap").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  $("libs").addEventListener("click", e => { const li = e.target.closest("li[data-i]"); if (li) showLib(+li.dataset.i); });
+  $("libs").addEventListener("keydown", e => { const li = e.target.closest("li[data-i]"); if (li && (e.key === "Enter" || e.key === " ")) { showLib(+li.dataset.i); e.preventDefault(); } });
   map.on("click", e => pickSchool(nearestSchool(e.latlng.lat, e.latlng.lng), false));
   ["off", "age", "weekend", "free"].forEach(id => $(id).addEventListener("input", render));
   render();
