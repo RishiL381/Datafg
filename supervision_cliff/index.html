@@ -131,7 +131,15 @@
   .up { color: var(--open); } .down { color: var(--cliff); }
   .empty { font-size: 13px; color: var(--mute); padding: 10px 0; }
   .pin { color: #fff; border-radius: 50%; width: 22px; height: 22px; line-height: 18px; text-align: center; font-size: 11px; font-weight: 700; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(15,23,42,.35); font-family: Inter, sans-serif; }
-  .pin.ok { background: var(--open); } .pin.no { background: var(--cliff); } .pin.g { background: #94A3B8; }
+  /* shape + colour, so pins still read for colour-blind users: circle = covers your hours, square = doesn't, diamond-free gray circle = distance only */
+  .pin.ok { background: var(--open); } .pin.no { background: var(--cliff); border-radius: 4px; } .pin.g { background: #94A3B8; }
+  .shape { width: 12px; height: 12px; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); flex: none; border-radius: 50%; }
+  .shape.sq { border-radius: 3px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  #cliff .c:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  li:focus-visible, .pill:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  footer { grid-column: 1 / -1; grid-row: 4; font-size: 12px; color: var(--mute); line-height: 1.6; padding: 4px 4px 12px; }
+  footer b { color: var(--ink); font-weight: 600; }
   .leaflet-container { font-family: Inter, sans-serif; }
 
   @media (max-width: 900px) {
@@ -139,6 +147,7 @@
     #side, #mapwrap, #cliffcard, #lists { grid-column: 1; grid-row: auto; }
     #mapwrap { height: 360px; }
     #lists { grid-template-columns: 1fr; }
+    footer { grid-column: 1; grid-row: auto; }
     #stat { width: 210px; }
   }
 </style>
@@ -203,15 +212,16 @@
         </div>
       </div>
       <div class="float" id="legend">
-        <div><span class="dot" style="background:var(--open)"></span>Covers your hours</div>
-        <div><span class="dot" style="background:var(--cliff)"></span>Closed or out of reach</div>
-        <div><span class="dot" style="background:#94A3B8"></span>Only close by distance</div>
+        <div><span class="shape" style="background:var(--open)"></span>Circle: covers your hours</div>
+        <div><span class="shape sq" style="background:var(--cliff)"></span>Square: closed or out of reach</div>
+        <div><span class="shape" style="background:#94A3B8"></span>Gray: only close by distance</div>
       </div>
     </div>
 
     <section class="card" id="cliffcard">
         <div class="head"><h2>The cliff</h2><span class="eyebrow" id="cliffnote">Reachable spaces still open, 3 to 10 PM</span></div>
         <div id="headline">Pick a school, or tap one of the examples.</div>
+        <p class="sr-only" id="cliffsr" aria-live="polite"></p>
         <div id="cliffplot"><div id="grid"></div><div id="cliff"></div></div>
         <div id="ticks"></div>
       </section>
@@ -221,6 +231,13 @@
       <section class="card"><div class="lhead"><h2>Ranked by what covers your hours</h2><span class="count" id="rcount"></span></div><div class="how">Same places, re-ranked for 3 PM to your clock-out. Tap a place for details.</div>
         <input type="text" class="lfilter" id="rfilter" placeholder="Filter places" aria-label="Filter places ranked by usefulness"><div class="scroll"><ol id="right"></ol></div></section>
     </div>
+    <footer>
+      <b>Research demo for the 2026 Datathon for Social Good, not a childcare or safety recommendation.</b>
+      Places, opening hours and bus stops come from Google Maps listings (via Bright Data) and may be out of date or incomplete;
+      about half of community centers and after-school programs list no hours. Always call a place to confirm hours, supervision and fees before relying on it.
+      "Reachable" uses straight-line distance and assumes a child who can walk up to 0.5 mi (0.25 mi for elementary): it does not account for
+      wheelchair access, disabilities, traffic or neighborhood conditions. Rent tiers come from Zillow listings. No personal data is shown.
+    </footer>
 </div>
 
 <div id="tip"></div>
@@ -285,7 +302,7 @@ function row(c, rank, showScore) {
   const main = c.chips.find(x => x[0] === "bad") || c.chips[0];
   const rest = c.chips.filter(x => x !== main);
   const chip = x => `<span class="chip ${x[0]}">${esc(x[1])}</span>`;
-  return `<li data-name="${esc(c.p.n.toLowerCase())}"><span class="rk">${rank}</span><div><div class="nm">${esc(c.p.n)}<span class="caret">▾</span></div>` +
+  return `<li tabindex="0" data-name="${esc(c.p.n.toLowerCase())}"><span class="rk">${rank}</span><div><div class="nm">${esc(c.p.n)}<span class="caret">▾</span></div>` +
     `<div class="chips">${chip(main)}</div>` +
     `<div class="chips more"><span class="meta" style="flex-basis:100%">${TYPE_LABEL[D.types[c.p.t]]} · <span class="num">${c.d.toFixed(2)} mi</span>${c.p.r !== null ? " · " + c.p.r.toFixed(1) + "★" : ""}</span>${rest.map(chip).join("")}</div></div>` +
     `<div class="score">${showScore ? c.s : `<span class="num" style="font-size:13px;font-weight:600;color:var(--mute)">${c.d.toFixed(2)} mi</span>`}${mv}</div></li>`;
@@ -304,11 +321,13 @@ function drawCliff(cand, q) {
   const top = Math.max(2, Math.ceil(max / 2) * 2);            // even axis top so gridlines land on whole numbers
   $("grid").innerHTML = [0, 0.5, 1].map(f => `<div style="bottom:${f * 100}%"><span>${Math.round(top * f)}</span></div>`).join("");
   $("cliff").innerHTML = times.map((t, i) =>
-    `<div class="c ${t === q.off ? "now" + (counts[i] === 0 ? " zero" : "") : t > q.off ? "after" : ""}" data-t="${clock(t)} · ${counts[i]} open">` +
+    `<div class="c ${t === q.off ? "now" + (counts[i] === 0 ? " zero" : "") : t > q.off ? "after" : ""}" data-t="${clock(t)} · ${counts[i]} open" tabindex="0" role="img" ` +
+    `aria-label="${clock(t)}: ${counts[i]} reachable ${counts[i] === 1 ? "place" : "places"} open${counts[i] ? ": " + esc(openAt[i].map(c => c.p.n).join(", ")) : ""}${t === q.off ? " (your clock-out time)" : ""}">` +
     `<div class="b" style="height:${Math.max(2, counts[i] / top * 100)}%"><span>${counts[i]}</span></div></div>`).join("");
   $("ticks").innerHTML = times.map((t, i) => `<span>${i === 0 || t % 60 === 0 ? clock(t).replace(" PM", "") : ""}</span>`).join("");
   const unknown = cand.filter(c => c.ok && c.p.ou === null).length;
   $("cliffnote").textContent = "Reachable spaces still open, 3 to 10 PM" + (unknown ? ` · ${unknown} more have no hours listed` : "");
+  $("cliffsr").textContent = "Reachable youth spaces still open by time: " + times.filter(t => t % 60 === 0 || t === q.off).map(t => `${clock(t)}, ${counts[times.indexOf(t)]}`).join("; ") + ".";
   return { atStart: counts[0], atOff: counts[times.indexOf(q.off)] ?? 0 };
 }
 function render() {
@@ -359,7 +378,7 @@ function render() {
   left.filter(c => !shown.has(c.p)).forEach(c => L.marker([c.p.la, c.p.lo], { icon: L.divIcon({ className: "", html: `<div class="pin g">${c.dRank}</div>`, iconSize: [22, 22] }) })
     .addTo(layer).bindTooltip(`${c.p.n} (distance #${c.dRank}, covers-your-hours #${c.uRank})`));
   right.forEach((c, i) => L.marker([c.p.la, c.p.lo], { icon: L.divIcon({ className: "", html: `<div class="pin ${c.s >= 60 ? "ok" : "no"}">${i + 1}</div>`, iconSize: [22, 22] }), zIndexOffset: 500 })
-    .addTo(layer).bindTooltip(`${c.p.n} (covers-your-hours #${i + 1}, distance #${c.dRank})`));
+    .addTo(layer).bindTooltip(`${c.p.n}: ${c.s >= 60 ? "covers your hours" : "doesn't cover your hours"} (#${i + 1}; distance #${c.dRank})`));
 }
 function pickSchool(s, zoom, presetIdx = -1) {
   school = s;
@@ -419,17 +438,22 @@ else {
   $("rfilter").addEventListener("input", () => applyFilter("rfilter", "right"));
   // cliff hover tooltip
   const tip = $("tip");
-  $("cliff").addEventListener("mousemove", e => {
-    const col = e.target.closest(".c"); if (!col) { tip.style.display = "none"; return; }
+  function showTip(col, cx, cy) {
     const i = [...col.parentNode.children].indexOf(col), d = cliffNames[i]; if (!d) return;
     tip.innerHTML = `<b>${clock(d.t)} · ${d.names.length} open</b>` + (d.names.length
       ? d.names.slice(0, 8).map(([n, ou]) => `<div>${esc(n)} <span class="tn">until ${clock(ou)}</span></div>`).join("") + (d.names.length > 8 ? `<div class="tn">+${d.names.length - 8} more</div>` : "")
       : `<div class="tn">Nothing your kid can reach is open.</div>`);
     tip.style.display = "block";
-    const x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8), y = e.clientY - tip.offsetHeight - 12;
-    tip.style.left = x + "px"; tip.style.top = (y < 8 ? e.clientY + 16 : y) + "px";
-  });
+    const x = Math.min(cx + 14, window.innerWidth - tip.offsetWidth - 8), y = cy - tip.offsetHeight - 12;
+    tip.style.left = x + "px"; tip.style.top = (y < 8 ? cy + 16 : y) + "px";
+  }
+  $("cliff").addEventListener("mousemove", e => { const col = e.target.closest(".c"); if (col) showTip(col, e.clientX, e.clientY); else tip.style.display = "none"; });
   $("cliff").addEventListener("mouseleave", () => { tip.style.display = "none"; });
+  // keyboard: Tab onto a bar shows the same tooltip
+  $("cliff").addEventListener("focusin", e => { const col = e.target.closest(".c"); if (col) { const r = col.getBoundingClientRect(); showTip(col, r.left + r.width / 2, r.top + 20); } });
+  $("cliff").addEventListener("focusout", () => { tip.style.display = "none"; });
+  // lists: Enter / Space expands a row
+  ["left", "right"].forEach(id => $(id).addEventListener("keydown", e => { const li = e.target.closest("li"); if (li && (e.key === "Enter" || e.key === " ")) { li.classList.toggle("open"); e.preventDefault(); } }));
   PRESETS.forEach((p, i) => {
     const b = document.createElement("button");
     b.className = "pill"; b.type = "button"; b.textContent = p.label;
