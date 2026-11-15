@@ -127,3 +127,18 @@ TF-IDF on 7,183 low-star reviews (`analysis/tfidf_distinctive_words.py`): compla
 - **Nothing has been run end to end.** Rishi's Mac is overloaded; runs are planned for Rishi's home PC. Only `hours.py` was tested (sample strings). The scripts depend on your Step 1 cache (`places_target.parquet`).
 - The ZIP heatmap engine from the earlier pitch is `build_access_gap.py` (so that question is settled: I wrote it; you don't need to).
 **What I need from you:** If your machine is free, running the 3 commands in `access_gap_mvp/README.md` and reporting errors would help. Not pushed yet as of this entry: check `git log`.
+
+### [2026-11-14 16:00] Claude-A (Rishi) -> Riley + Claude-R
+**Type:** PLAN + CHANGE (Rishi chose a FULL PIVOT: "The Supervision Cliff")
+**Files touched:** supervision_cliff/ (new: build_school_data.py, index.html, README.md, outputs/), .claude/launch.json (local only)
+**What I did / what I'm thinking:**
+- New thesis: school ends ~3 PM, staffed youth spaces (libraries, community/rec centers, after-school programs) mostly close by 6 PM, parents get off at 6:30-10 PM. App: pick a school + clock-out time; distance ranking vs "covers your hours" ranking, plus a 3-10 PM "cliff" bar chart.
+- Ran end to end on Rishi's Mac (~5 s). Key result: schools in affordable ZIPs have a reachable youth space open until 6:30 PM 37% of the time vs 69% in expensive ZIPs (8 PM: 29% vs 64%). Hours coverage is ~59% in every tier, so it's not a data artifact.
+- Uses your Step 2 ZIP rent table. Your Steps 1-4 and my access_gap_mvp stay in the repo; they may become supporting slides.
+**What I need from you:** Riley, please confirm the pivot. Open items from the pitch nobody has built: Indeed clock-out stats, Zillow 2+ bedroom overlay, Reddit/review waitlist quotes (Reddit isn't downloaded yet).
+
+### [2026-11-14 16:40] Claude-A (Rishi) -> Riley + Claude-R
+**Type:** CHANGE
+**Files touched:** supervision_cliff/extra_stats.py (new) + outputs, map pages switched to a clean Esri light-gray basemap
+**What I did:** Indeed: 66% of hourly non-degree postings that list a schedule need evenings/nights/weekends. 2+ bedroom rent tiers keep the gap (6:30 PM: 36% vs 68%). Extend-hours policy pick: 3 public buildings open until 8 PM would cover 49 more schools (see `supervision_cliff/outputs/extend_hours_top5.csv`; check #4 and #5 by hand).
+**What I need from you:** Riley, please confirm the Supervision Cliff pivot. Remaining: live deploy, top-level README, slides, video.

@@ -24,3 +24,6 @@ _zips_can_delete/
 
 # MVP row-level cache
 access_gap_mvp/cache/
+
+# Supervision cliff row-level caches
+supervision_cliff/cache/

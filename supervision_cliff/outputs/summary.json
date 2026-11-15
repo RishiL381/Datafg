@@ -1,0 +1,86 @@
+{
+  "n_schools": 2529,
+  "n_youth_spaces": 1358,
+  "radius_mi": 1.5,
+  "spaces_by_type": {
+    "community_center": 549,
+    "after_school": 436,
+    "library": 316,
+    "rec_center": 31,
+    "youth_org": 26
+  },
+  "pct_hours_known_by_type": {
+    "after_school": 50.7,
+    "community_center": 45.9,
+    "library": 88.3,
+    "rec_center": 80.6,
+    "youth_org": 46.2
+  },
+  "pct_open_until_by_type_known_hours": {
+    "5pm": {
+      "after_school": 88.2,
+      "community_center": 75.0,
+      "library": 91.4,
+      "rec_center": 80.0,
+      "youth_org": 83.3
+    },
+    "6:30pm": {
+      "after_school": 30.8,
+      "community_center": 30.2,
+      "library": 40.9,
+      "rec_center": 52.0,
+      "youth_org": 33.3
+    },
+    "8pm": {
+      "after_school": 6.3,
+      "community_center": 22.6,
+      "library": 32.3,
+      "rec_center": 36.0,
+      "youth_org": 25.0
+    },
+    "10pm": {
+      "after_school": 3.2,
+      "community_center": 8.7,
+      "library": 8.6,
+      "rec_center": 0.0,
+      "youth_org": 16.7
+    }
+  },
+  "pct_schools_with_any_space_within_radius": 93.8,
+  "pct_schools_with_usable_space_by_clockout": {
+    "5pm": 73.4,
+    "6:30pm": 51.4,
+    "8pm": 39.7,
+    "10pm": 15.0
+  },
+  "by_rent_tier_pct_schools_with_usable_space": {
+    "affordable": {
+      "n": 782,
+      "any_within_radius": 91.9,
+      "5pm": 71.6,
+      "6:30pm": 37.3,
+      "8pm": 28.5,
+      "10pm": 5.8
+    },
+    "middle": {
+      "n": 847,
+      "any_within_radius": 95.7,
+      "5pm": 71.2,
+      "6:30pm": 53.6,
+      "8pm": 32.6,
+      "10pm": 10.3
+    },
+    "expensive": {
+      "n": 684,
+      "any_within_radius": 97.1,
+      "5pm": 83.0,
+      "6:30pm": 68.9,
+      "8pm": 64.0,
+      "10pm": 33.2
+    }
+  },
+  "rent_tier_cutoffs": {
+    "affordable_max": 3969.1666666666665,
+    "middle_max": 5091.833333333333
+  }
+}

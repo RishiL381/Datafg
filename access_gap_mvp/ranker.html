@@ -126,7 +126,8 @@ const D = window.RANKER;
 const $ = id => document.getElementById(id);
 const RADIUS = 2, TOP = 8, BUS_MI = 0.25;
 const map = L.map("map").setView([37.77, -122.22], 10);
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap contributors", maxZoom: 17 }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { attribution: "Tiles &copy; Esri", maxZoom: 17 }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", { maxZoom: 17, pane: "shadowPane" }).addTo(map);
 const layer = L.layerGroup().addTo(map);
 let origin = null;
 

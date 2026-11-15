@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Supervision Cliff</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="outputs/school_data.js"></script>
+<style>
+  :root { --ink:#16202c; --mute:#5b6675; --line:#d9dee5; --bg:#f4f6f8; --card:#fff; --bad:#b42318; --good:#087443; --warn:#b54708; --accent:#1d4ed8; --bar:#93a4bd; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+  #app { display: grid; grid-template-columns: 310px 1fr; height: 100%; }
+  #side { background: var(--card); border-right: 1px solid var(--line); padding: 14px; overflow-y: auto; }
+  h1 { font-size: 18px; margin: 0; }
+  .sub { font-size: 12px; color: var(--mute); margin: 4px 0 12px; }
+  fieldset { border: 0; padding: 0; margin: 0 0 12px; }
+  .lbl { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+  .opt { font-weight: 400; color: var(--mute); }
+  select, input[type=text] { width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 13px; background: #fff; color: var(--ink); }
+  input[type=range] { width: 100%; }
+  .val { font-size: 13px; font-weight: 600; }
+  label.chk { display: flex; gap: 6px; align-items: flex-start; font-size: 13px; margin: 4px 0; }
+  .note { font-size: 12px; color: var(--mute); margin-top: 4px; min-height: 16px; }
+  details { border-top: 1px solid var(--line); padding-top: 10px; }
+  summary { font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
+  #main { display: grid; grid-template-rows: minmax(200px, 36%) auto 1fr; min-width: 0; min-height: 0; }
+  #map { min-height: 0; }
+  #cliffbox { background: var(--card); border-bottom: 1px solid var(--line); padding: 10px 14px; }
+  #cliffbox .t { font-size: 13px; font-weight: 700; }
+  #cliff { display: flex; align-items: flex-end; gap: 3px; height: 70px; margin-top: 6px; }
+  #cliff div.b { flex: 1; background: var(--bar); border-radius: 3px 3px 0 0; position: relative; min-height: 2px; }
+  #cliff div.b.after { background: #f3c0bb; }
+  #cliff div.b.now { background: var(--bad); }
+  #cliff div.b span { position: absolute; top: -15px; left: 0; right: 0; text-align: center; font-size: 10px; color: var(--mute); }
+  #ticks { display: flex; gap: 3px; font-size: 10px; color: var(--mute); margin-top: 2px; }
+  #ticks span { flex: 1; text-align: center; }
+  #lists { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; overflow-y: auto; min-height: 0; }
+  #headline { grid-column: 1 / -1; font-size: 13px; background: #eef4ff; border: 1px solid #c7d7fe; border-radius: 8px; padding: 8px 10px; }
+  .col { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+  .col h2 { font-size: 14px; margin: 0; }
+  .how { font-size: 12px; color: var(--mute); margin: 2px 0 8px; }
+  ol { list-style: none; margin: 0; padding: 0; }
+  li { display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13px; }
+  .rk { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .nm { font-weight: 600; overflow-wrap: anywhere; }
+  .meta { font-size: 12px; color: var(--mute); }
+  .chips { margin-top: 3px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { font-size: 11px; padding: 1px 6px; border-radius: 9px; border: 1px solid; }
+  .chip.bad { color: var(--bad); border-color: #f3c0bb; background: #fef3f2; }
+  .chip.good { color: var(--good); border-color: #abdfc4; background: #ecfdf3; }
+  .chip.warn { color: var(--warn); border-color: #f5d0a6; background: #fffaeb; }
+  .score { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .move { font-size: 11px; font-weight: 600; }
+  .up { color: var(--good); } .down { color: var(--bad); }
+  .empty { font-size: 13px; color: var(--mute); padding: 10px 0; }
+  .pin { background: var(--accent); color: #fff; border-radius: 50%; width: 22px; height: 22px; line-height: 22px; text-align: center; font-size: 12px; font-weight: 700; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+  .pin.g { background: #667085; }
+  @media (max-width: 820px) {
+    #app { grid-template-columns: 1fr; height: auto; }
+    #side { border-right: 0; border-bottom: 1px solid var(--line); }
+    #main { grid-template-rows: 280px auto auto; }
+    #lists { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <h1>The Supervision Cliff</h1>
+    <p class="sub">School ends at 3. Where can your kid safely be until you get off work? Staffed youth spaces near a school, ranked by distance and by whether they actually cover your hours.</p>
+
+    <fieldset>
+      <div class="lbl">Your kid's school</div>
+      <input type="text" id="school" list="schoollist" placeholder="Type a school name, or click the map" aria-label="School">
+      <datalist id="schoollist"></datalist>
+      <div class="note" id="schoolnote"></div>
+    </fieldset>
+    <fieldset>
+      <div class="lbl">When do you get off work? <span class="val" id="offval"></span></div>
+      <input type="range" id="off" min="930" max="1320" step="30" value="1110" aria-label="Clock-out time">
+    </fieldset>
+
+    <details open>
+      <summary>Tailor it <span class="opt">(optional)</span></summary>
+      <fieldset>
+        <div class="lbl">Your kid's age</div>
+        <select id="age" aria-label="Kid's age">
+          <option value="auto">Match the school</option>
+          <option value="elementary">Elementary (won't ride a bus alone)</option>
+          <option value="middle">Middle school</option>
+          <option value="high">High school</option>
+        </select>
+      </fieldset>
+      <fieldset>
+        <label class="chk"><input type="checkbox" id="weekend"> <span>I also work weekends <span class="opt">(needs Sat or Sun hours)</span></span></label>
+        <label class="chk"><input type="checkbox" id="free"> <span>Free or public places only</span></label>
+      </fieldset>
+    </details>
+    <p class="note">Staffed places only: libraries, community and rec centers, after-school programs, youth organizations. Parks and playgrounds are left out because nobody supervises there. No safety scores: review-based "safety" ratings penalize public spaces in lower-income areas.</p>
+  </aside>
+
+  <main id="main">
+    <div id="map"></div>
+    <div id="cliffbox">
+      <div class="t" id="clifftitle">Youth spaces your kid can reach that are still open, by time of day</div>
+      <div id="cliff"></div>
+      <div id="ticks"></div>
+    </div>
+    <div id="lists">
+      <div id="headline">Pick a school to see the supervision cliff.</div>
+      <section class="col"><h2>Ranked by distance</h2><div class="how">What a standard map shows: closest first.</div><ol id="left"></ol></section>
+      <section class="col"><h2>Ranked by what covers your hours</h2><div class="how">Same places, re-ranked for 3 PM to your clock-out.</div><ol id="right"></ol></section>
+    </div>
+  </main>
+</div>
+
+<script>
+const D = window.SCHOOLS;
+const $ = id => document.getElementById(id);
+const RADIUS = 1.5, TOP = 8, BUS_MI = 0.25, START = 15 * 60, OPEN_BY = 15 * 60 + 30;
+const TYPE_LABEL = { library: "Library", community_center: "Community center", rec_center: "Rec center", after_school: "After-school program", youth_org: "Youth organization" };
+const map = L.map("map").setView([37.77, -122.22], 10);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { attribution: "Tiles &copy; Esri", maxZoom: 17 }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", { maxZoom: 17, pane: "shadowPane" }).addTo(map);
+const layer = L.layerGroup().addTo(map);
+let school = null;
+
+function miles(la1, lo1, la2, lo2) {
+  const r = Math.PI / 180, a = Math.sin((la2 - la1) * r / 2) ** 2 + Math.cos(la1 * r) * Math.cos(la2 * r) * Math.sin((lo2 - lo1) * r / 2) ** 2;
+  return 3958.8 * 2 * Math.asin(Math.sqrt(a));
+}
+function clock(m) {
+  if (m >= 1440) return "midnight";
+  const h = Math.floor(m / 60), mm = m % 60;
+  return (((h + 11) % 12) + 1) + (mm ? ":" + String(mm).padStart(2, "0") : "") + (h >= 12 ? " PM" : " AM");
+}
+function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+function answers() {
+  const age = $("age").value === "auto" ? (school && school.lv !== "k12_other" ? school.lv : "middle") : $("age").value;
+  return { off: +$("off").value, age, weekend: $("weekend").checked, free: $("free").checked };
+}
+function reach(p, d, q) {
+  const walk = q.age === "elementary" ? 0.25 : 0.5;
+  if (d <= walk) return [true, 0, ["good", "Walkable from school"]];
+  if (q.age === "elementary") return [false, 45, ["bad", "Too far for a young kid alone"]];
+  if (school.b <= BUS_MI && p.b <= BUS_MI) return [true, 8, ["good", "Bus stop at both ends"]];
+  return [false, 45, ["bad", "No bus link"]];
+}
+function score(p, d, q) {
+  let s = 100 - 30 * Math.min(d / RADIUS, 1);
+  const chips = [];
+  if (p.ou === null) { s -= 20; chips.push(["warn", "Hours not listed"]); }
+  else if (p.ou < 0) { s -= 50; chips.push(["bad", "Closed most weekdays"]); }
+  else {
+    if (p.ou < q.off) { s -= 50; chips.push(["bad", `Closes ${clock(p.ou)}` + (q.off - p.ou <= 120 ? `, ${q.off - p.ou} min before you're off` : "")]); }
+    else chips.push(["good", `Open until ${clock(p.ou)}`]);
+    if (p.ob > OPEN_BY) { s -= 15; chips.push(["warn", `Opens ${clock(p.ob)}`]); }
+  }
+  if (q.weekend && p.we === 0) { s -= 40; chips.push(["bad", "Closed weekends"]); }
+  if (q.weekend && p.we === 1) chips.push(["good", "Open weekends"]);
+  const [ok, pen, chip] = reach(p, d, q); s -= pen; chips.push(chip);
+  if (p.p) { s += 5; chips.push(["good", "Free / public"]); }
+  else { chips.push(["warn", "May charge fees"]); if (q.free) s -= 40; }
+  return { s: Math.max(0, Math.min(100, Math.round(s))), chips, ok };
+}
+function row(c, rank, showScore) {
+  const moved = c.dRank - c.uRank;
+  const mv = !showScore || moved === 0 ? "" : `<div class="move ${moved > 0 ? "up" : "down"}">${moved > 0 ? "▲" : "▼"} ${Math.abs(moved)} vs distance</div>`;
+  return `<li><span class="rk">${rank}</span><div><div class="nm">${esc(c.p.n)}</div>` +
+    `<div class="meta">${TYPE_LABEL[D.types[c.p.t]]} · ${c.d.toFixed(2)} mi${c.p.r !== null ? " · " + c.p.r.toFixed(1) + "★" : ""}</div>` +
+    `<div class="chips">${c.chips.map(x => `<span class="chip ${x[0]}">${esc(x[1])}</span>`).join("")}</div></div>` +
+    `<div class="score">${showScore ? c.s : ""}${mv}</div></li>`;
+}
+
+function drawCliff(cand, q) {
+  const times = []; for (let t = START; t <= 22 * 60; t += 30) times.push(t);
+  const pool = cand.filter(c => c.ok && c.p.ou !== null && c.p.ob >= 0 && c.p.ob <= OPEN_BY && (!q.free || c.p.p) && (!q.weekend || c.p.we === 1));
+  const counts = times.map(t => pool.filter(c => c.p.ou > t || (t === START && c.p.ou >= t)).length);
+  const max = Math.max(1, ...counts);
+  $("cliff").innerHTML = times.map((t, i) =>
+    `<div class="b ${t === q.off ? "now" : t > q.off ? "after" : ""}" style="height:${Math.max(3, counts[i] / max * 100)}%" title="${clock(t)}: ${counts[i]} open"><span>${counts[i]}</span></div>`).join("");
+  $("ticks").innerHTML = times.map(t => `<span>${t % 60 ? "" : clock(t).replace(" PM", "")}</span>`).join("");
+  const unknown = cand.filter(c => c.ok && c.p.ou === null).length;
+  $("clifftitle").textContent = `Youth spaces your kid can reach that are still open, 3 PM to 10 PM (known hours only${unknown ? `; ${unknown} more have no hours listed` : ""})`;
+  return { atStart: counts[0], atOff: counts[times.indexOf(q.off)] ?? 0 };
+}
+
+function render() {
+  layer.clearLayers();
+  $("offval").textContent = clock(+$("off").value);
+  if (!school) return;
+  const q = answers();
+  const cand = [];
+  for (const p of D.spaces) {
+    if (Math.abs(p.la - school.la) > 0.03) continue;
+    const d = miles(school.la, school.lo, p.la, p.lo);
+    if (d <= RADIUS) cand.push({ p, d, ...score(p, d, q) });
+  }
+  cand.sort((a, b) => a.d - b.d).forEach((c, i) => c.dRank = i + 1);
+  const byUse = [...cand].sort((a, b) => b.s - a.s || a.d - b.d);
+  byUse.forEach((c, i) => c.uRank = i + 1);
+  const left = cand.slice(0, TOP), right = byUse.slice(0, TOP);
+  const none = `<div class="empty">No staffed youth spaces within ${RADIUS} miles.</div>`;
+  $("left").innerHTML = left.map((c, i) => row(c, i + 1, false)).join("") || none;
+  $("right").innerHTML = right.map((c, i) => row(c, i + 1, true)).join("") || none;
+  const cl = drawCliff(cand, q);
+  const h = $("headline");
+  if (!cand.length) h.textContent = `No staffed youth spaces within ${RADIUS} miles of ${school.n}.`;
+  else {
+    const usable = cand.filter(c => c.s >= 60).length, near = cand[0];
+    const drop = near.uRank > 1 ? ` The closest one, <b>${esc(near.p.n)}</b>, drops to #${near.uRank}.` : "";
+    h.innerHTML = `A map shows <b>${cand.length}</b> youth spaces within ${RADIUS} miles of <b>${esc(school.n)}</b>. ` +
+      `At 3 PM your kid can reach <b>${cl.atStart}</b> that are open; by ${clock(q.off)}, <b>${cl.atOff}</b> still are.${drop}` +
+      (usable ? "" : " <b>None of them fully cover your hours.</b>");
+  }
+  L.circleMarker([school.la, school.lo], { radius: 8, color: "#fff", weight: 2, fillColor: "#b42318", fillOpacity: 1 }).addTo(layer).bindTooltip(school.n);
+  L.circle([school.la, school.lo], { radius: RADIUS * 1609.34, color: "#667085", weight: 1, fill: false, dashArray: "4 4" }).addTo(layer);
+  const shown = new Set(right.map(c => c.p));
+  left.filter(c => !shown.has(c.p)).forEach(c => L.marker([c.p.la, c.p.lo], { icon: L.divIcon({ className: "", html: `<div class="pin g">${c.dRank}</div>`, iconSize: [22, 22] }) })
+    .addTo(layer).bindTooltip(`${c.p.n} (distance #${c.dRank}, covers-your-hours #${c.uRank})`));
+  right.forEach((c, i) => L.marker([c.p.la, c.p.lo], { icon: L.divIcon({ className: "", html: `<div class="pin">${i + 1}</div>`, iconSize: [22, 22] }), zIndexOffset: 500 })
+    .addTo(layer).bindTooltip(`${c.p.n} (covers-your-hours #${i + 1}, distance #${c.dRank})`));
+}
+
+function pickSchool(s, zoom) {
+  school = s;
+  $("school").value = s.n;
+  $("schoolnote").textContent = `${s.lv === "k12_other" ? "K-12" : s.lv[0].toUpperCase() + s.lv.slice(1)} school · ` +
+    (s.b <= BUS_MI ? "bus stop within a 5-minute walk" : "no bus stop within a 5-minute walk");
+  if (zoom) map.setView([s.la, s.lo], 14);
+  render();
+}
+
+if (!D) $("headline").textContent = "No data yet. Run: python supervision_cliff/build_school_data.py";
+else {
+  const names = new Map();
+  D.schools.forEach(s => { if (!names.has(s.n)) names.set(s.n, s); });
+  $("schoollist").innerHTML = [...names.keys()].sort().map(n => `<option value="${esc(n)}">`).join("");
+  $("school").addEventListener("change", () => { const s = names.get($("school").value); if (s) pickSchool(s, true); });
+  map.on("click", e => {
+    let best = null, bd = Infinity;
+    for (const s of D.schools) { const d = miles(e.latlng.lat, e.latlng.lng, s.la, s.lo); if (d < bd) { bd = d; best = s; } }
+    if (best) pickSchool(best, false);
+  });
+  ["off", "age", "weekend", "free"].forEach(id => $(id).addEventListener("input", render));
+  render();
+}
+</script>
+</body>
+</html>

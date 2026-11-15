@@ -42,8 +42,9 @@ const VIEWS = [
   ["weekend_score", "Weekend only: open Sat or Sun"],
 ];
 const map = L.map("map").setView([37.75, -122.2], 9);
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-  { attribution: "&copy; OpenStreetMap contributors", maxZoom: 15 }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+  { attribution: "Tiles &copy; Esri", maxZoom: 15 }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", { maxZoom: 15, pane: "shadowPane" }).addTo(map);
 function color(s) {
   const stops = [[0, [185, 28, 28]], [40, [245, 158, 11]], [70, [250, 204, 21]], [100, [22, 163, 74]]];
   for (let i = 1; i < stops.length; i++) if (s <= stops[i][0]) {

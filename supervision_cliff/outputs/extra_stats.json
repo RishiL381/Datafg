@@ -1,0 +1,46 @@
+{
+  "indeed": {
+    "postings_deduped": 136136,
+    "hourly_non_degree": 47301,
+    "hourly_non_degree_listing_a_schedule": 17745,
+    "pct_evening_night_weekend_of_those_listing_a_schedule": 66.3,
+    "pct_evening_night_or_overnight_of_listed": 34.6,
+    "pct_weekend_of_listed": 55.9,
+    "pct_evening_night_weekend_of_all_hourly_non_degree": 24.9
+  },
+  "zillow_2br": {
+    "cutoffs": {
+      "affordable_max": 4057,
+      "middle_max": 5238
+    },
+    "pct_schools_with_usable_space": {
+      "affordable": {
+        "n": 823,
+        "5pm": 70.5,
+        "6:30pm": 36.3,
+        "8pm": 27.9,
+        "10pm": 5.5
+      },
+      "middle": {
+        "n": 779,
+        "5pm": 72.8,
+        "6:30pm": 56.0,
+        "8pm": 32.6,
+        "10pm": 9.5
+      },
+      "expensive": {
+        "n": 703,
+        "5pm": 82.5,
+        "6:30pm": 68.1,
+        "8pm": 64.0,
+        "10pm": 34.1
+      }
+    }
+  },
+  "extend_hours": {
+    "schools_without_8pm_coverage": 1520,
+    "candidates_considered": 43,
+    "top5_total_schools_unlocked": 71,
+    "top5_affordable_zip_schools_unlocked": 62
+  }
+}
